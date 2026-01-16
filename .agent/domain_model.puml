@@ -1,0 +1,72 @@
+@startuml
+allow_mixing
+
+' --- Identity Boundary ---
+package "Identity" {
+    class User {
+        +id
+        +name
+        +email
+        +role_id
+    }
+    class Role {
+        +id
+        +name
+    }
+    class Permission {
+        +id
+        +key
+    }
+    
+    User "*" --> "1" Role : has
+    Role "*" --> "*" Permission : grants
+}
+
+' --- Learning Boundary ---
+package "Learning" {
+    class Course {
+        +id
+        +title
+        +status
+        +version
+        +created_by
+    }
+    class CourseModule {
+        +id
+        +course_id
+        +type
+        +content
+    }
+    class Enrollment {
+        +id
+        +user_id
+        +course_id
+        +status
+    }
+    class Progress {
+        +id
+        +percent
+        +status
+    }
+
+    Course "1" --> "*" CourseModule : contains
+    Enrollment "1" --> "1" Course : references
+    Progress "1" --> "1" Enrollment : tracks
+}
+
+' --- Audit Boundary ---
+package "Audit" {
+    class AuditLog {
+        +id
+        +actor_user_id
+        +action
+        +payload
+    }
+}
+
+' --- Relationships across boundaries ---
+Enrollment --> "Identity.User" : assigned to >
+Course --> "Identity.User" : created by >
+AuditLog --> "Identity.User" : executed by >
+
+@enduml

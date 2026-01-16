@@ -1,0 +1,21 @@
+parameters:
+  level: 6
+  paths:
+    - app
+  tmpDir: storage/phpstan
+  checkMissingIterableValueType: false
+  checkGenericClassInNonGenericObjectType: false
+  reportUnmatchedIgnoredErrors: true
+
+  excludePaths:
+    - vendor
+    - storage
+    - bootstrap/cache
+
+  ignoreErrors:
+    # Inertia/Helpers pueden generar falsos positivos al inicio.
+    - '#Call to an undefined method Illuminate\\Http\\Request::inertia#'
+
+includes:
+  # Si agregas larastan: vendor/nunomaduro/larastan/extension.neon
+  - phpstan-baseline.neon

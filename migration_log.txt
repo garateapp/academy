@@ -1,0 +1,26 @@
+
+   INFO  Running migrations.  
+
+  0001_01_01_000000_create_users_table  14.35ms FAIL
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'users' already exists (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: greenexnet_prod, SQL: create table `users` (`id` bigint unsigned not null auto_increment primary key, `name` varchar(255) not null, `email` varchar(255) not null, `email_verified_at` timestamp null, `password` varchar(255) not null, `remember_token` varchar(100) null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci')
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:831
+    827Ôûò             $exceptionType = $this->isUniqueConstraintError($e)
+    828Ôûò                 ? UniqueConstraintViolationException::class
+    829Ôûò                 : QueryException::class;
+    830Ôûò 
+  Ô×£ 831Ôûò             throw new $exceptionType(
+    832Ôûò                 $this->getNameWithReadWriteType(),
+    833Ôûò                 $query,
+    834Ôûò                 $this->prepareBindings($bindings),
+    835Ôûò                 $e,
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:577
+      PDOException::("SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'users' already exists")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:577
+      PDOStatement::execute()
+
