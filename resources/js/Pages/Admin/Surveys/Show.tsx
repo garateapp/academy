@@ -1,7 +1,7 @@
-import AdminLayout from '@/Layouts/AdminLayout';
-import Alert from '@/Components/Admin/Alert';
-import DataTable from '@/Components/Admin/DataTable';
-import PageHeader from '@/Components/Admin/PageHeader';
+import AdminLayout from '@/layouts/AdminLayout';
+import Alert from '@/components/Admin/Alert';
+import DataTable from '@/components/Admin/DataTable';
+import PageHeader from '@/components/Admin/PageHeader';
 import { Link, useForm } from '@inertiajs/react';
 
 interface Survey {

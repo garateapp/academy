@@ -1,7 +1,7 @@
-import AdminLayout from '@/Layouts/AdminLayout';
-import PageHeader from '@/Components/Admin/PageHeader';
-import Alert from '@/Components/Admin/Alert';
-import DataTable from '@/Components/Admin/DataTable';
+import AdminLayout from '@/layouts/AdminLayout';
+import PageHeader from '@/components/Admin/PageHeader';
+import Alert from '@/components/Admin/Alert';
+import DataTable from '@/components/Admin/DataTable';
 import { Link, router, useForm } from '@inertiajs/react';
 
 interface AuditUser {

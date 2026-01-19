@@ -1,6 +1,6 @@
-import AdminLayout from '@/Layouts/AdminLayout';
-import PageHeader from '@/Components/Admin/PageHeader';
-import Alert from '@/Components/Admin/Alert';
+import AdminLayout from '@/layouts/AdminLayout';
+import PageHeader from '@/components/Admin/PageHeader';
+import Alert from '@/components/Admin/Alert';
 import { Link, router } from '@inertiajs/react';
 
 interface LearningPath {

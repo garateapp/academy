@@ -1,5 +1,5 @@
-import AdminLayout from '@/Layouts/AdminLayout';
-import PageHeader from '@/Components/Admin/PageHeader';
+import AdminLayout from '@/layouts/AdminLayout';
+import PageHeader from '@/components/Admin/PageHeader';
 import { Link } from '@inertiajs/react';
 
 interface User {

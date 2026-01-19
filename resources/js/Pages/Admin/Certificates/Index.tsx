@@ -1,7 +1,7 @@
-import AdminLayout from '@/Layouts/AdminLayout';
-import DataTable from '@/Components/Admin/DataTable';
-import PageHeader from '@/Components/Admin/PageHeader';
-import Alert from '@/Components/Admin/Alert';
+import AdminLayout from '@/layouts/AdminLayout';
+import DataTable from '@/components/Admin/DataTable';
+import PageHeader from '@/components/Admin/PageHeader';
+import Alert from '@/components/Admin/Alert';
 import { Link, router } from '@inertiajs/react';
 
 interface User {
