@@ -114,9 +114,6 @@ export default function Welcome({
           </div>
 
           <div className="hidden md:flex items-center gap-8">
-            // <a href="#'categorias'" className="font-medium hover:text-emerald-600 transition-colors">
-            //   Cursos
-            // </a>
 
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
