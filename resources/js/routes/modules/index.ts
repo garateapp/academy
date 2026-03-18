@@ -1,9 +1,10 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 import progress from './progress'
 import complete from './complete'
+import interactiveDocument from './interactive-document'
 /**
 * @see \App\Modules\Learning\Http\Controllers\ModuleViewController::show
- * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:15
+ * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:21
  * @route '/modules/{module}'
  */
 export const show = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -18,7 +19,7 @@ show.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\ModuleViewController::show
- * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:15
+ * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:21
  * @route '/modules/{module}'
  */
 show.url = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -51,7 +52,7 @@ show.url = (args: { module: number | { id: number } } | [module: number | { id: 
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\ModuleViewController::show
- * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:15
+ * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:21
  * @route '/modules/{module}'
  */
 show.get = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -60,7 +61,7 @@ show.get = (args: { module: number | { id: number } } | [module: number | { id: 
 })
 /**
 * @see \App\Modules\Learning\Http\Controllers\ModuleViewController::show
- * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:15
+ * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:21
  * @route '/modules/{module}'
  */
 show.head = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -70,7 +71,7 @@ show.head = (args: { module: number | { id: number } } | [module: number | { id:
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\ModuleViewController::show
- * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:15
+ * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:21
  * @route '/modules/{module}'
  */
     const showForm = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -80,7 +81,7 @@ show.head = (args: { module: number | { id: number } } | [module: number | { id:
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\ModuleViewController::show
- * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:15
+ * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:21
  * @route '/modules/{module}'
  */
         showForm.get = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +90,7 @@ show.head = (args: { module: number | { id: number } } | [module: number | { id:
         })
             /**
 * @see \App\Modules\Learning\Http\Controllers\ModuleViewController::show
- * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:15
+ * @see app/Modules/Learning/Http/Controllers/ModuleViewController.php:21
  * @route '/modules/{module}'
  */
         showForm.head = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -107,6 +108,7 @@ const modules = {
     show: Object.assign(show, show),
 progress: Object.assign(progress, progress),
 complete: Object.assign(complete, complete),
+interactiveDocument: Object.assign(interactiveDocument, interactiveDocument),
 }
 
 export default modules

@@ -1,6 +1,12 @@
 import AdminLayout from '@/layouts/AdminLayout';
+import InteractiveDocumentEditor from '@/components/Admin/InteractiveDocumentEditor';
 import PageHeader from '@/components/Admin/PageHeader';
 import Alert from '@/components/Admin/Alert';
+import {
+  createDefaultInteractiveDocumentConfig,
+  normalizeInteractiveDocumentConfig,
+  type InteractiveDocumentConfig,
+} from '@/types/interactive-document';
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useMemo, useRef, useState } from 'react';
 
@@ -14,7 +20,7 @@ interface AvailableCourse {
   title: string;
 }
 
-type ModuleType = 'all' | 'text' | 'video' | 'file' | 'link' | 'assessment' | 'scorm';
+type ModuleType = 'all' | 'text' | 'video' | 'file' | 'link' | 'assessment' | 'scorm' | 'interactive_document';
 
 interface CourseModule {
   id: number;
@@ -60,6 +66,7 @@ const MODULE_TYPES: { key: ModuleType; label: string; hint: string }[] = [
   { key: 'link', label: 'Link', hint: 'Recurso externo' },
   { key: 'assessment', label: 'Evaluación', hint: 'Asociar evaluación' },
   { key: 'scorm', label: 'SCORM', hint: 'Contenido SCORM' },
+  { key: 'interactive_document', label: 'Documento', hint: 'Lectura con campos y declaración' },
 ];
 
 const MODULE_LABELS: Record<string, string> = {
@@ -69,6 +76,7 @@ const MODULE_LABELS: Record<string, string> = {
   link: 'Link',
   assessment: 'Evaluación',
   scorm: 'SCORM',
+  interactive_document: 'Documento interactivo',
 };
 
 const getCookieValue = (name: string): string | null => {
@@ -108,8 +116,6 @@ export default function Edit({
   const [selectedModuleId, setSelectedModuleId] = useState<number | null>(
     (course.modules && course.modules[0]?.id) || null,
   );
-  const [moduleFiles, setModuleFiles] = useState<Record<number, File | null>>({});
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'error'>('idle');
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const saveTimeouts = useRef<Record<number, number>>({});
 
@@ -140,6 +146,12 @@ export default function Edit({
     return modules.find((module) => module.id === selectedModuleId) || null;
   }, [modules, selectedModuleId]);
 
+  const getInteractiveDocumentConfig = (module: CourseModule): InteractiveDocumentConfig =>
+    normalizeInteractiveDocumentConfig(
+      module.config_json?.interactive_document,
+      module.title,
+    );
+
   const getPreview = (module: CourseModule) => {
     if (module.type === 'text') {
       return module.content?.slice(0, 140) || 'Sin contenido';
@@ -148,6 +160,15 @@ export default function Edit({
     if (module.type === 'assessment') {
       const assessmentId = module.config_json?.assessment_id as number | undefined;
       return assessmentId ? `Evaluación #${assessmentId}` : 'Sin evaluación asociada';
+    }
+
+    if (module.type === 'interactive_document') {
+      const documentConfig = module.config_json?.interactive_document as
+        | { title?: string; fields?: unknown[] }
+        | undefined;
+      const title = documentConfig?.title || module.title;
+      const fields = Array.isArray(documentConfig?.fields) ? documentConfig.fields.length : 0;
+      return `${title} · ${fields} campos configurados`;
     }
 
     if (module.asset_path) {
@@ -164,15 +185,21 @@ export default function Edit({
     }
 
     saveTimeouts.current[moduleId] = window.setTimeout(() => {
-      void saveModule(moduleId, module);
-    }, 700);
+      void saveModule(moduleId, module, null, true);
+    }, 1800);
   };
 
-  const saveModule = async (moduleId: number, module: CourseModule, file?: File | null) => {
+  const saveModule = async (
+    moduleId: number,
+    module: CourseModule,
+    file?: File | null,
+    silent = false,
+  ) => {
     const token = getCookieValue('XSRF-TOKEN');
 
-    setSaveStatus('saving');
-    setSaveMessage('Guardando módulo...');
+    if (!silent) {
+      setSaveMessage('Guardando módulo...');
+    }
 
     try {
       const hasFile = Boolean(file);
@@ -228,14 +255,11 @@ export default function Edit({
       setModules((prev) =>
         prev.map((item) => (item.id === moduleId ? payload.module : item)),
       );
-      if (file) {
-        setModuleFiles((prev) => ({ ...prev, [moduleId]: null }));
+      if (!silent) {
+        setSaveMessage('Guardado');
+        window.setTimeout(() => setSaveMessage(null), 1200);
       }
-      setSaveStatus('idle');
-      setSaveMessage('Guardado');
-      window.setTimeout(() => setSaveMessage(null), 1200);
-    } catch (error) {
-      setSaveStatus('error');
+    } catch {
       setSaveMessage('Error al guardar. Intenta nuevamente.');
     }
   };
@@ -272,10 +296,34 @@ export default function Edit({
     });
   };
 
+  const updateInteractiveDocumentConfig = (
+    moduleId: number,
+    nextConfig: InteractiveDocumentConfig,
+  ) => {
+    setModules((prev) => {
+      const next = prev.map((module) => {
+        if (module.id !== moduleId) return module;
+
+        return {
+          ...module,
+          config_json: {
+            ...(module.config_json || {}),
+            interactive_document: nextConfig,
+          },
+        };
+      });
+
+      const updated = next.find((module) => module.id === moduleId);
+      if (updated) {
+        scheduleSave(moduleId, updated);
+      }
+
+      return next;
+    });
+  };
+
   const handleFileUpload = (moduleId: number, file: File | null) => {
     if (!file) return;
-
-    setModuleFiles((prev) => ({ ...prev, [moduleId]: file }));
 
     const module = modules.find((item) => item.id === moduleId);
     if (module) {
@@ -294,13 +342,25 @@ export default function Edit({
       type,
       title: `Nuevo ${MODULE_LABELS[type] || 'Módulo'}`,
       description: '',
-      content: type === 'text' ? '' : null,
-      asset_path: type !== 'text' ? '' : null,
-      asset_type: type === 'file' ? 'file' : type === 'video' ? 'video' : 'url',
+      content: ['text', 'interactive_document'].includes(type) ? '' : null,
+      asset_path: ['video', 'file', 'link', 'scorm'].includes(type) ? '' : null,
+      asset_type:
+        type === 'file'
+          ? 'file'
+          : type === 'video'
+            ? 'video'
+            : ['link', 'scorm'].includes(type)
+              ? 'url'
+              : null,
       duration_minutes: null,
       is_required: true,
       sort_order: maxOrder + 1,
-      config_json: type === 'assessment' ? { assessment_id: null } : {},
+      config_json:
+        type === 'assessment'
+          ? { assessment_id: null }
+          : type === 'interactive_document'
+            ? { interactive_document: createDefaultInteractiveDocumentConfig('Nuevo documento interactivo') }
+            : {},
     };
 
     try {
@@ -322,9 +382,7 @@ export default function Edit({
       setModules((prev) => [...prev, json.module]);
       setSelectedModuleId(json.module.id);
       setActiveType(json.module.type);
-      setModuleFiles((prev) => ({ ...prev, [json.module.id]: null }));
-    } catch (error) {
-      setSaveStatus('error');
+    } catch {
       setSaveMessage('No se pudo crear el módulo.');
     }
   };
@@ -350,19 +408,13 @@ export default function Edit({
       }
 
       setModules((prev) => prev.filter((module) => module.id !== moduleId));
-      setModuleFiles((prev) => {
-        const next = { ...prev };
-        delete next[moduleId];
-        return next;
-      });
       setSelectedModuleId((prev) => {
         if (prev === moduleId) {
           return modules.filter((module) => module.id !== moduleId)[0]?.id || null;
         }
         return prev;
       });
-    } catch (error) {
-      setSaveStatus('error');
+    } catch {
       setSaveMessage('No se pudo eliminar el módulo.');
     }
   };
@@ -383,8 +435,7 @@ export default function Edit({
         },
         body: JSON.stringify({ order: orderIds }),
       });
-    } catch (error) {
-      setSaveStatus('error');
+    } catch {
       setSaveMessage('No se pudo reordenar.');
     }
   };
@@ -888,6 +939,22 @@ export default function Edit({
                           }
                         ></textarea>
                       </div>
+                    )}
+
+                    {selectedModule.type === 'interactive_document' && (
+                      <InteractiveDocumentEditor
+                        bodyHtml={selectedModule.content || '<p></p>'}
+                        config={getInteractiveDocumentConfig(selectedModule)}
+                        onBodyChange={(nextBodyHtml) =>
+                          updateModuleField(selectedModule.id, 'content', nextBodyHtml)
+                        }
+                        onConfigChange={(nextConfig) => {
+                          updateInteractiveDocumentConfig(selectedModule.id, nextConfig);
+                          if (nextConfig.title !== selectedModule.title) {
+                            updateModuleField(selectedModule.id, 'title', nextConfig.title);
+                          }
+                        }}
+                      />
                     )}
 
                     {['video', 'file'].includes(selectedModule.type) && (

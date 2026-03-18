@@ -317,7 +317,7 @@ show.head = (args: { course: number | { id: number } } | [course: number | { id:
     show.form = showForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::edit
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:251
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:312
  * @route '/courses/{course}/edit'
  */
 export const edit = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -332,7 +332,7 @@ edit.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::edit
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:251
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:312
  * @route '/courses/{course}/edit'
  */
 edit.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -365,7 +365,7 @@ edit.url = (args: { course: number | { id: number } } | [course: number | { id: 
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::edit
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:251
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:312
  * @route '/courses/{course}/edit'
  */
 edit.get = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -374,7 +374,7 @@ edit.get = (args: { course: number | { id: number } } | [course: number | { id: 
 })
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::edit
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:251
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:312
  * @route '/courses/{course}/edit'
  */
 edit.head = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -384,7 +384,7 @@ edit.head = (args: { course: number | { id: number } } | [course: number | { id:
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::edit
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:251
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:312
  * @route '/courses/{course}/edit'
  */
     const editForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -394,7 +394,7 @@ edit.head = (args: { course: number | { id: number } } | [course: number | { id:
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::edit
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:251
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:312
  * @route '/courses/{course}/edit'
  */
         editForm.get = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -403,7 +403,7 @@ edit.head = (args: { course: number | { id: number } } | [course: number | { id:
         })
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::edit
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:251
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:312
  * @route '/courses/{course}/edit'
  */
         editForm.head = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -419,7 +419,7 @@ edit.head = (args: { course: number | { id: number } } | [course: number | { id:
     edit.form = editForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::update
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:274
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:335
  * @route '/courses/{course}'
  */
 export const update = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -434,7 +434,7 @@ update.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::update
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:274
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:335
  * @route '/courses/{course}'
  */
 update.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -467,7 +467,7 @@ update.url = (args: { course: number | { id: number } } | [course: number | { id
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::update
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:274
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:335
  * @route '/courses/{course}'
  */
 update.put = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -476,7 +476,7 @@ update.put = (args: { course: number | { id: number } } | [course: number | { id
 })
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::update
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:274
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:335
  * @route '/courses/{course}'
  */
 update.patch = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -486,7 +486,7 @@ update.patch = (args: { course: number | { id: number } } | [course: number | { 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::update
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:274
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:335
  * @route '/courses/{course}'
  */
     const updateForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -501,7 +501,7 @@ update.patch = (args: { course: number | { id: number } } | [course: number | { 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::update
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:274
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:335
  * @route '/courses/{course}'
  */
         updateForm.put = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -515,7 +515,7 @@ update.patch = (args: { course: number | { id: number } } | [course: number | { 
         })
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::update
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:274
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:335
  * @route '/courses/{course}'
  */
         updateForm.patch = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -531,7 +531,7 @@ update.patch = (args: { course: number | { id: number } } | [course: number | { 
     update.form = updateForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::destroy
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:319
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
  * @route '/courses/{course}'
  */
 export const destroy = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -546,7 +546,7 @@ destroy.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::destroy
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:319
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
  * @route '/courses/{course}'
  */
 destroy.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -579,7 +579,7 @@ destroy.url = (args: { course: number | { id: number } } | [course: number | { i
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::destroy
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:319
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
  * @route '/courses/{course}'
  */
 destroy.delete = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -589,7 +589,7 @@ destroy.delete = (args: { course: number | { id: number } } | [course: number | 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::destroy
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:319
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
  * @route '/courses/{course}'
  */
     const destroyForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -604,7 +604,7 @@ destroy.delete = (args: { course: number | { id: number } } | [course: number | 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::destroy
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:319
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
  * @route '/courses/{course}'
  */
         destroyForm.delete = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -620,7 +620,7 @@ destroy.delete = (args: { course: number | { id: number } } | [course: number | 
     destroy.form = destroyForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::selfEnroll
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:460
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:521
  * @route '/courses/{course}/self-enroll'
  */
 export const selfEnroll = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -635,7 +635,7 @@ selfEnroll.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::selfEnroll
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:460
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:521
  * @route '/courses/{course}/self-enroll'
  */
 selfEnroll.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -668,7 +668,7 @@ selfEnroll.url = (args: { course: number | { id: number } } | [course: number | 
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::selfEnroll
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:460
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:521
  * @route '/courses/{course}/self-enroll'
  */
 selfEnroll.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -678,7 +678,7 @@ selfEnroll.post = (args: { course: number | { id: number } } | [course: number |
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::selfEnroll
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:460
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:521
  * @route '/courses/{course}/self-enroll'
  */
     const selfEnrollForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -688,7 +688,7 @@ selfEnroll.post = (args: { course: number | { id: number } } | [course: number |
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::selfEnroll
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:460
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:521
  * @route '/courses/{course}/self-enroll'
  */
         selfEnrollForm.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -699,7 +699,7 @@ selfEnroll.post = (args: { course: number | { id: number } } | [course: number |
     selfEnroll.form = selfEnrollForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::publish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:338
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:399
  * @route '/courses/{course}/publish'
  */
 export const publish = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -714,7 +714,7 @@ publish.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::publish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:338
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:399
  * @route '/courses/{course}/publish'
  */
 publish.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -747,7 +747,7 @@ publish.url = (args: { course: number | { id: number } } | [course: number | { i
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::publish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:338
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:399
  * @route '/courses/{course}/publish'
  */
 publish.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -757,7 +757,7 @@ publish.post = (args: { course: number | { id: number } } | [course: number | { 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::publish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:338
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:399
  * @route '/courses/{course}/publish'
  */
     const publishForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -767,7 +767,7 @@ publish.post = (args: { course: number | { id: number } } | [course: number | { 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::publish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:338
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:399
  * @route '/courses/{course}/publish'
  */
         publishForm.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -778,7 +778,7 @@ publish.post = (args: { course: number | { id: number } } | [course: number | { 
     publish.form = publishForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::unpublish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:359
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:420
  * @route '/courses/{course}/unpublish'
  */
 export const unpublish = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -793,7 +793,7 @@ unpublish.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::unpublish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:359
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:420
  * @route '/courses/{course}/unpublish'
  */
 unpublish.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -826,7 +826,7 @@ unpublish.url = (args: { course: number | { id: number } } | [course: number | {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::unpublish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:359
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:420
  * @route '/courses/{course}/unpublish'
  */
 unpublish.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -836,7 +836,7 @@ unpublish.post = (args: { course: number | { id: number } } | [course: number | 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::unpublish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:359
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:420
  * @route '/courses/{course}/unpublish'
  */
     const unpublishForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -846,7 +846,7 @@ unpublish.post = (args: { course: number | { id: number } } | [course: number | 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::unpublish
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:359
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:420
  * @route '/courses/{course}/unpublish'
  */
         unpublishForm.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -857,7 +857,7 @@ unpublish.post = (args: { course: number | { id: number } } | [course: number | 
     unpublish.form = unpublishForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::archive
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:441
  * @route '/courses/{course}/archive'
  */
 export const archive = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -872,7 +872,7 @@ archive.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::archive
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:441
  * @route '/courses/{course}/archive'
  */
 archive.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -905,7 +905,7 @@ archive.url = (args: { course: number | { id: number } } | [course: number | { i
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::archive
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:441
  * @route '/courses/{course}/archive'
  */
 archive.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -915,7 +915,7 @@ archive.post = (args: { course: number | { id: number } } | [course: number | { 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::archive
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:441
  * @route '/courses/{course}/archive'
  */
     const archiveForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -925,7 +925,7 @@ archive.post = (args: { course: number | { id: number } } | [course: number | { 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::archive
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:380
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:441
  * @route '/courses/{course}/archive'
  */
         archiveForm.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

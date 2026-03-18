@@ -226,6 +226,7 @@ class CourseController extends Controller
             'modules',
             'prerequisites',
             'enrollments.user',
+            'enrollments.course.modules',
         ]);
 
         $attendanceSessions = AttendanceSession::with(['records.user'])
@@ -242,7 +243,67 @@ class CourseController extends Controller
             ->get(['id', 'name', 'email']);
 
         return Inertia::render('Admin/Courses/Show', [
-            'course' => $course,
+            'course' => [
+                'id' => $course->id,
+                'title' => $course->title,
+                'slug' => $course->slug,
+                'description' => $course->description,
+                'category' => $course->category
+                    ? [
+                        'id' => $course->category->id,
+                        'name' => $course->category->name,
+                    ]
+                    : null,
+                'cover_image' => $course->cover_image,
+                'duration_minutes' => $course->duration_minutes,
+                'difficulty' => $course->difficulty,
+                'status' => $course->status,
+                'valid_from' => $course->valid_from?->toIso8601String(),
+                'valid_until' => $course->valid_until?->toIso8601String(),
+                'published_at' => $course->published_at?->toIso8601String(),
+                'allow_self_enrollment' => (bool) $course->allow_self_enrollment,
+                'creator' => $course->creator
+                    ? [
+                        'id' => $course->creator->id,
+                        'name' => $course->creator->name,
+                        'email' => $course->creator->email,
+                    ]
+                    : null,
+                'updater' => $course->updater
+                    ? [
+                        'id' => $course->updater->id,
+                        'name' => $course->updater->name,
+                        'email' => $course->updater->email,
+                    ]
+                    : null,
+                'prerequisites' => $course->prerequisites->map(fn (Course $prerequisite) => [
+                    'id' => $prerequisite->id,
+                    'title' => $prerequisite->title,
+                ])->values(),
+                'modules' => $course->modules->map(fn ($module) => [
+                    'id' => $module->id,
+                    'title' => $module->title,
+                    'type' => $module->type,
+                    'sort_order' => $module->sort_order,
+                    'config_json' => $module->config_json,
+                ])->values(),
+                'enrollments' => $course->enrollments->map(function (Enrollment $enrollment) {
+                    return [
+                        'id' => $enrollment->id,
+                        'user' => [
+                            'id' => $enrollment->user?->id,
+                            'name' => $enrollment->user?->name,
+                            'email' => $enrollment->user?->email,
+                        ],
+                        'status' => $enrollment->status,
+                        'progress' => round($enrollment->calculateProgress(), 2),
+                        'enrolled_at' => $enrollment->created_at?->toIso8601String(),
+                        'completed_at' => $enrollment->completed_at?->toIso8601String(),
+                    ];
+                })->values(),
+                'modules_count' => $course->modules_count,
+                'enrollments_count' => $course->enrollments_count,
+            ],
             'availableUsers' => $availableUsers,
             'attendanceSessions' => $attendanceSessions,
         ]);

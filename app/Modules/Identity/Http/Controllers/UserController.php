@@ -7,14 +7,18 @@ use App\Modules\Identity\Domain\User;
 use App\Modules\Identity\Domain\Role;
 use App\Modules\Learning\Domain\Course;
 use App\Modules\Learning\Domain\Enrollment;
+use App\Modules\Learning\Domain\InteractiveDocumentSubmission;
 use App\Modules\Identity\Http\Requests\StoreUserRequest;
 use App\Modules\Identity\Http\Requests\UpdateUserRequest;
 use App\Modules\Audit\Application\AuditService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class UserController extends Controller
 {
@@ -82,8 +86,9 @@ class UserController extends Controller
     {
         $user->load([
             'role.permissions',
-            'enrollments.course',
+            'enrollments.course.modules',
             'moduleCompletions.module',
+            'interactiveDocumentSubmissions.module.course',
         ]);
 
         $user->loadCount([
@@ -98,9 +103,104 @@ class UserController extends Controller
             ->get(['id', 'title']);
 
         return Inertia::render('Admin/Users/Show', [
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'area' => $user->area,
+                'position' => $user->position,
+                'status' => $user->status,
+                'google_id' => $user->google_id,
+                'avatar' => $user->avatar,
+                'last_login_at' => $user->last_login_at?->toIso8601String(),
+                'created_at' => $user->created_at?->toIso8601String(),
+                'role' => [
+                    'id' => $user->role->id,
+                    'name' => $user->role->name,
+                    'description' => $user->role->description,
+                    'permissions' => $user->role->permissions->map(fn ($permission) => [
+                        'id' => $permission->id,
+                        'key' => $permission->key,
+                        'name' => $permission->name,
+                        'module' => $permission->module,
+                    ])->values(),
+                ],
+                'enrollments' => $user->enrollments->map(function (Enrollment $enrollment) {
+                    return [
+                        'id' => $enrollment->id,
+                        'course' => [
+                            'id' => $enrollment->course?->id,
+                            'title' => $enrollment->course?->title,
+                            'slug' => $enrollment->course?->slug,
+                        ],
+                        'status' => $enrollment->status,
+                        'progress' => round($enrollment->calculateProgress(), 2),
+                        'enrolled_at' => $enrollment->created_at?->toIso8601String(),
+                        'completed_at' => $enrollment->completed_at?->toIso8601String(),
+                    ];
+                })->values(),
+                'enrollments_count' => $user->enrollments_count,
+                'module_completions' => $user->moduleCompletions
+                    ->sortByDesc('completed_at')
+                    ->values()
+                    ->map(fn ($completion) => [
+                        'id' => $completion->id,
+                        'module' => [
+                            'id' => $completion->module?->id,
+                            'title' => $completion->module?->title,
+                        ],
+                        'completed_at' => $completion->completed_at?->toIso8601String(),
+                        'score' => $completion->score !== null ? (float) $completion->score : null,
+                    ]),
+                'module_completions_count' => $user->module_completions_count,
+                'interactive_document_submissions' => $user->interactiveDocumentSubmissions
+                    ->whereNotNull('submitted_at')
+                    ->sortByDesc('submitted_at')
+                    ->values()
+                    ->map(fn (InteractiveDocumentSubmission $submission) => [
+                        'id' => $submission->id,
+                        'attempt_number' => $submission->attempt_number,
+                        'status' => $submission->status,
+                        'title' => $submission->schema_json['title'] ?? $submission->module?->title ?? 'Documento interactivo',
+                        'document_code' => $submission->schema_json['document_code'] ?? null,
+                        'course_title' => $submission->module?->course?->title,
+                        'module_title' => $submission->module?->title,
+                        'submitted_at' => $submission->submitted_at?->toIso8601String(),
+                        'receipt_url' => route('admin.users.interactive-documents.receipt', [
+                            'user' => $user->id,
+                            'submission' => $submission->id,
+                        ]),
+                    ]),
+            ],
             'availableCourses' => $availableCourses,
         ]);
+    }
+
+    public function interactiveDocumentReceipt(User $user, InteractiveDocumentSubmission $submission): SymfonyResponse
+    {
+        $this->authorize('view', $user);
+
+        abort_unless($submission->user_id === $user->id, 404);
+
+        $submission->loadMissing('module.course');
+        abort_unless($submission->module !== null && $submission->submitted_at !== null, 404);
+
+        $schema = is_array($submission->schema_json) ? $submission->schema_json : [];
+        $responses = is_array($submission->responses_json) ? $submission->responses_json : [];
+
+        $pdf = Pdf::loadView('interactive-documents.receipt', [
+            'course' => $submission->module->course,
+            'module' => $submission->module,
+            'user' => $user,
+            'submission' => $submission,
+            'schema' => $schema,
+            'responses' => $responses,
+        ])->setPaper('letter');
+
+        $fileName = Str::slug(($submission->module->title ?: 'documento') . '-' . $user->name)
+            . '-intento-' . $submission->attempt_number . '-comprobante.pdf';
+
+        return $pdf->download($fileName);
     }
 
     public function edit(User $user): Response

@@ -2,7 +2,7 @@ import AdminLayout from '@/layouts/AdminLayout';
 import PageHeader from '@/components/Admin/PageHeader';
 import DataTable from '@/components/Admin/DataTable';
 import { Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import type { FormEvent, FormEventHandler } from 'react';
 
 interface Category {
   id: number;
@@ -18,7 +18,9 @@ interface User {
 interface Module {
   id: number;
   title: string;
-  order: number;
+  type?: string;
+  sort_order?: number;
+  config_json?: { [key: string]: unknown } | null;
 }
 
 interface Prerequisite {
@@ -31,7 +33,8 @@ interface Enrollment {
   user: User;
   status: string;
   progress: number;
-  enrolled_at: string;
+  enrolled_at: string | null;
+  completed_at?: string | null;
 }
 
 interface AttendanceRecord {
@@ -126,7 +129,7 @@ export default function Show({
     );
   };
 
-  const handleEnroll = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleEnroll = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     post(`/courses/${course.id}/enrollments`, {
       preserveScroll: true,
@@ -153,36 +156,40 @@ export default function Show({
         <div className="flex items-center gap-2">
           <progress
             className="progress progress-primary w-24"
-            value={row.progress}
+            value={normalizeProgress(row.progress)}
             max="100"
           ></progress>
-          <span className="text-sm">{row.progress}%</span>
+          <span className="text-sm">{normalizeProgress(row.progress).toFixed(0)}%</span>
         </div>
       ),
     },
     {
       header: 'Estado',
-      accessor: (row: Enrollment) => (
+      accessor: (row: Enrollment) => {
+        const displayStatus = getEnrollmentDisplayStatus(row);
+
+        return (
         <div
           className={`badge ${
-            row.status === 'completed'
+            displayStatus === 'completed'
               ? 'badge-success'
-              : row.status === 'active'
+              : displayStatus === 'active'
                 ? 'badge-primary'
                 : 'badge-ghost'
           }`}
         >
-          {row.status === 'completed'
+          {displayStatus === 'completed'
             ? 'Completado'
-            : row.status === 'active'
+            : displayStatus === 'active'
               ? 'En Progreso'
               : 'Abandonado'}
         </div>
-      ),
+      );
+      },
     },
     {
       header: 'Matriculado',
-      accessor: (row: Enrollment) => new Date(row.enrolled_at).toLocaleDateString(),
+      accessor: (row: Enrollment) => formatDate(row.enrolled_at, { dateOnly: true }),
     },
   ];
 
@@ -311,7 +318,7 @@ export default function Show({
                 {course.published_at && (
                   <div>
                     <div className="text-sm text-base-content/60">Publicado</div>
-                    <div>{new Date(course.published_at).toLocaleDateString()}</div>
+                    <div>{formatDate(course.published_at, { dateOnly: true })}</div>
                   </div>
                 )}
 
@@ -319,9 +326,9 @@ export default function Show({
                   <div>
                     <div className="text-sm text-base-content/60">Vigencia</div>
                     <div className="text-sm">
-                      {new Date(course.valid_from).toLocaleDateString()}
+                      {formatDate(course.valid_from, { dateOnly: true })}
                       {course.valid_until && (
-                        <> - {new Date(course.valid_until).toLocaleDateString()}</>
+                        <> - {formatDate(course.valid_until, { dateOnly: true })}</>
                       )}
                     </div>
                   </div>
@@ -484,8 +491,22 @@ export default function Show({
                       key={module.id}
                       className="flex items-center gap-3 p-3 bg-base-200 rounded-lg"
                     >
-                      <div className="badge badge-primary badge-outline">{module.order}</div>
-                      <span className="font-medium">{module.title}</span>
+                      <div className="badge badge-primary badge-outline">
+                        {module.sort_order ?? module.id}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium">{module.title}</div>
+                        <div className="mt-1 flex flex-wrap gap-2 text-xs text-base-content/60">
+                          <span className="badge badge-ghost badge-sm">
+                            {getModuleTypeLabel(module.type)}
+                          </span>
+                          {module.type === 'interactive_document' && (
+                            <span className="badge badge-outline badge-sm">
+                              {getInteractiveDocumentFieldCount(module.config_json)} campos
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -603,6 +624,32 @@ export default function Show({
   );
 }
 
+function getModuleTypeLabel(type?: string) {
+  switch (type) {
+    case 'text':
+      return 'Texto';
+    case 'video':
+      return 'Video';
+    case 'file':
+      return 'Archivo';
+    case 'link':
+      return 'Link';
+    case 'assessment':
+      return 'Evaluación';
+    case 'scorm':
+      return 'SCORM';
+    case 'interactive_document':
+      return 'Documento interactivo';
+    default:
+      return type || 'Módulo';
+  }
+}
+
+function getInteractiveDocumentFieldCount(config?: { [key: string]: unknown } | null) {
+  const documentConfig = config?.interactive_document as { fields?: unknown[] } | undefined;
+  return Array.isArray(documentConfig?.fields) ? documentConfig.fields.length : 0;
+}
+
 function AttendanceSessionCard({
   session,
   courseId,
@@ -661,7 +708,7 @@ function AttendanceSessionCard({
         <div>
           <div className="font-semibold">{session.title}</div>
           <div className="text-sm text-base-content/60">
-            {new Date(session.session_date).toLocaleDateString()}
+            {formatDate(session.session_date, { dateOnly: true })}
             {session.location ? ` | ${session.location}` : ''}
           </div>
           {session.notes && (
@@ -738,4 +785,34 @@ function AttendanceSessionCard({
       </form>
     </div>
   );
+}
+
+function normalizeProgress(value: number | null | undefined) {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return 0;
+  }
+
+  return Math.min(Math.max(value, 0), 100);
+}
+
+function getEnrollmentDisplayStatus(enrollment: Enrollment) {
+  return normalizeProgress(enrollment.progress) >= 100 || enrollment.status === 'completed'
+    ? 'completed'
+    : enrollment.status;
+}
+
+function formatDate(
+  value: string | null | undefined,
+  options?: { dateOnly?: boolean },
+) {
+  if (!value) {
+    return 'Sin fecha';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return 'Sin fecha';
+  }
+
+  return options?.dateOnly ? date.toLocaleDateString() : date.toLocaleString();
 }

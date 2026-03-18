@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Modules\Identity\Http\Controllers\UserController::store
- * @see app/Modules/Identity/Http/Controllers/UserController.php:195
+ * @see app/Modules/Identity/Http/Controllers/UserController.php:295
  * @route '/admin/users/{user}/enrollments'
  */
 export const store = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Modules\Identity\Http\Controllers\UserController::store
- * @see app/Modules/Identity/Http/Controllers/UserController.php:195
+ * @see app/Modules/Identity/Http/Controllers/UserController.php:295
  * @route '/admin/users/{user}/enrollments'
  */
 store.url = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { user: number | { id: number } } | [user: number | { id: num
 
 /**
 * @see \App\Modules\Identity\Http\Controllers\UserController::store
- * @see app/Modules/Identity/Http/Controllers/UserController.php:195
+ * @see app/Modules/Identity/Http/Controllers/UserController.php:295
  * @route '/admin/users/{user}/enrollments'
  */
 store.post = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { user: number | { id: number } } | [user: number | { id: nu
 
     /**
 * @see \App\Modules\Identity\Http\Controllers\UserController::store
- * @see app/Modules/Identity/Http/Controllers/UserController.php:195
+ * @see app/Modules/Identity/Http/Controllers/UserController.php:295
  * @route '/admin/users/{user}/enrollments'
  */
     const storeForm = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ store.post = (args: { user: number | { id: number } } | [user: number | { id: nu
 
             /**
 * @see \App\Modules\Identity\Http\Controllers\UserController::store
- * @see app/Modules/Identity/Http/Controllers/UserController.php:195
+ * @see app/Modules/Identity/Http/Controllers/UserController.php:295
  * @route '/admin/users/{user}/enrollments'
  */
         storeForm.post = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

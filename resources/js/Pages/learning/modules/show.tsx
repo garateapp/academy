@@ -1,3 +1,4 @@
+import InteractiveDocumentModule from '@/components/learning/interactive-document-module';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -12,7 +13,7 @@ interface CourseSummary {
 interface ModuleData {
     id: number;
     title: string;
-    type: 'text' | 'video' | 'file' | 'link' | 'assessment' | 'scorm';
+    type: 'text' | 'video' | 'file' | 'link' | 'assessment' | 'scorm' | 'interactive_document';
     content: string | null;
     asset_path: string | null;
     assessment_id?: number | null;
@@ -44,6 +45,55 @@ interface Props {
         status: string;
         assessment_id: number;
     } | null;
+    interactiveDocument?: {
+        submission_id?: number | null;
+        attempt_number?: number | null;
+        title: string;
+        introduction: string;
+        body: string;
+        submit_label: string;
+        declaration_label: string;
+        organization_name: string;
+        document_code: string;
+        footer_note: string;
+        fields: Array<{
+            id: string;
+            key: string;
+            label: string;
+            type: 'text' | 'textarea' | 'checkbox' | 'select' | 'radio' | 'date' | 'email' | 'number';
+            required: boolean;
+            placeholder: string;
+            help_text: string;
+            options: Array<{
+                id: string;
+                label: string;
+                value: string;
+                detail: {
+                    enabled: boolean;
+                    label: string;
+                    placeholder: string;
+                    help_text: string;
+                    required: boolean;
+                };
+            }>;
+        }>;
+        status: string;
+        opened_at: string | null;
+        updated_at?: string | null;
+        submitted_at: string | null;
+        completed_at: string | null;
+        responses: Record<string, string | boolean>;
+        declaration_accepted: boolean;
+        can_start_new_attempt?: boolean;
+        submissions?: Array<{
+            id: number;
+            attempt_number: number;
+            status: string;
+            submitted_at: string | null;
+            completed_at: string | null;
+            receipt_url: string | null;
+        }>;
+    } | null;
 }
 
 const COMPLETION_THRESHOLD = 90;
@@ -69,6 +119,7 @@ export default function ModuleShow({
     attemptsUsed = 0,
     maxAttempts = null,
     latestAttempt = null,
+    interactiveDocument = null,
 }: Props) {
     const { flash } = usePage().props as { flash?: { error?: string } };
 
@@ -156,6 +207,12 @@ export default function ModuleShow({
         } catch {
             // ignore network errors for now
         }
+    };
+
+    const handleInteractiveDocumentSubmitted = () => {
+        setCompleted(true);
+        setPercentComplete(100);
+        setLastSavedAt(new Date().toLocaleTimeString());
     };
 
     useEffect(() => {
@@ -394,6 +451,15 @@ export default function ModuleShow({
                             </button>
                         )}
                     </div>
+                )}
+
+                {module.type === 'interactive_document' && interactiveDocument && (
+                    <InteractiveDocumentModule
+                        moduleId={module.id}
+                        document={interactiveDocument}
+                        readonly={false}
+                        onSubmitted={handleInteractiveDocumentSubmitted}
+                    />
                 )}
 
                 <div className="rounded-3xl bg-emerald-50 p-6 text-sm text-emerald-700">

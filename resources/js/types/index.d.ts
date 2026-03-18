@@ -61,7 +61,7 @@ export interface Course {
 export interface CourseModule {
     id: number;
     course_id: number;
-    type: 'text' | 'video' | 'file' | 'link' | 'assessment' | 'scorm';
+    type: 'text' | 'video' | 'file' | 'link' | 'assessment' | 'scorm' | 'interactive_document';
     title: string;
     content: string | null;
     asset_path: string | null;

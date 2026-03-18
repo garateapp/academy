@@ -51,12 +51,14 @@ const moduleTypeIcons = {
     text: FileText,
     video: Video,
     file: File,
+    interactive_document: FileText,
 };
 
 const moduleTypeLabels = {
     text: 'Texto',
     video: 'Video',
     file: 'Archivo',
+    interactive_document: 'Documento interactivo',
 };
 
 export default function CourseShow({

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::store
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:398
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:459
  * @route '/courses/{course}/enrollments'
  */
 export const store = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::store
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:398
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:459
  * @route '/courses/{course}/enrollments'
  */
 store.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { course: number | { id: number } } | [course: number | { id:
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::store
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:398
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:459
  * @route '/courses/{course}/enrollments'
  */
 store.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { course: number | { id: number } } | [course: number | { id
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::store
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:398
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:459
  * @route '/courses/{course}/enrollments'
  */
     const storeForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ store.post = (args: { course: number | { id: number } } | [course: number | { id
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseController::store
- * @see app/Modules/Learning/Http/Controllers/CourseController.php:398
+ * @see app/Modules/Learning/Http/Controllers/CourseController.php:459
  * @route '/courses/{course}/enrollments'
  */
         storeForm.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

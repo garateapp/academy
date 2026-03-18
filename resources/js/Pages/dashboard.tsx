@@ -112,6 +112,17 @@ export default function Dashboard({
               <p className="text-base-content/70 mt-2 max-w-xl">
                 Visualiza tu avance, tus proximos cursos y el crecimiento de tu carrera.
               </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link href="/my-history" className="btn btn-primary btn-sm">
+                  Ver historial completo
+                </Link>
+                <Link href="/my-assessments" className="btn btn-outline btn-sm">
+                  Mis evaluaciones
+                </Link>
+                <Link href="/my-certificates" className="btn btn-outline btn-sm">
+                  Mis certificados
+                </Link>
+              </div>
             </div>
             <div className="flex flex-wrap gap-4">
               <div className="stat bg-base-100 shadow rounded-xl">

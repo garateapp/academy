@@ -68,6 +68,11 @@ class User extends Authenticatable
         return $this->hasMany(\App\Modules\Learning\Domain\ModuleCompletion::class);
     }
 
+    public function interactiveDocumentSubmissions()
+    {
+        return $this->hasMany(\App\Modules\Learning\Domain\InteractiveDocumentSubmission::class);
+    }
+
     public function hasPermission(string $permissionKey): bool
     {
         return $this->role?->permissions()->where('key', $permissionKey)->exists() ?? false;

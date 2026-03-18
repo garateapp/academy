@@ -16,6 +16,12 @@ class ModuleCompletionController extends Controller
     {
         $user = $request->user();
 
+        if ($module->type === 'interactive_document') {
+            return response()->json([
+                'message' => 'Este módulo debe completarse enviando el documento interactivo.',
+            ], 422);
+        }
+
         $enrollment = Enrollment::where('user_id', $user->id)
             ->where('course_id', $module->course_id)
             ->first();

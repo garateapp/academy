@@ -4,15 +4,19 @@ use App\Modules\Learning\Http\Controllers\CategoryController;
 use App\Modules\Learning\Http\Controllers\CourseController;
 use App\Modules\Learning\Http\Controllers\CourseModuleController;
 use App\Modules\Learning\Http\Controllers\LearningPathController;
+use App\Modules\Learning\Http\Controllers\LearningHistoryController;
 use App\Modules\Learning\Http\Controllers\ModuleProgressController;
 use App\Modules\Learning\Http\Controllers\ModuleCompletionController;
 use App\Modules\Learning\Http\Controllers\ModuleViewController;
+use App\Modules\Learning\Http\Controllers\InteractiveDocumentController;
 use App\Modules\Learning\Http\Controllers\AttendanceSessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth'])->group(function () {
     // Courses CRUD
     Route::resource('courses', CourseController::class);
+    Route::get('my-history', [LearningHistoryController::class, 'index'])
+        ->name('learning.history');
     Route::post('courses/{course}/modules', [CourseModuleController::class, 'store'])
         ->name('courses.modules.store');
     Route::put('courses/{course}/modules/{module}', [CourseModuleController::class, 'update'])
@@ -38,6 +42,16 @@ Route::middleware(['web', 'auth'])->group(function () {
         ->name('modules.progress.store');
     Route::post('modules/{module}/complete', [ModuleCompletionController::class, 'store'])
         ->name('modules.complete.store');
+    Route::post('modules/{module}/interactive-document/open', [InteractiveDocumentController::class, 'open'])
+        ->name('modules.interactive-document.open');
+    Route::post('modules/{module}/interactive-document/new-attempt', [InteractiveDocumentController::class, 'startNewAttempt'])
+        ->name('modules.interactive-document.new-attempt');
+    Route::post('modules/{module}/interactive-document/draft', [InteractiveDocumentController::class, 'saveDraft'])
+        ->name('modules.interactive-document.draft');
+    Route::post('modules/{module}/interactive-document/submit', [InteractiveDocumentController::class, 'submit'])
+        ->name('modules.interactive-document.submit');
+    Route::get('modules/{module}/interactive-document/receipt', [InteractiveDocumentController::class, 'receipt'])
+        ->name('modules.interactive-document.receipt');
 
     // Course status actions
     Route::post('courses/{course}/publish', [CourseController::class, 'publish'])

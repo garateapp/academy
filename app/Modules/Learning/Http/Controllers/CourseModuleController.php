@@ -121,7 +121,7 @@ class CourseModuleController extends Controller
         }
 
         $rules = [
-            'type' => [$required, 'string', 'in:text,video,file,scorm,link,assessment'],
+            'type' => [$required, 'string', 'in:text,video,file,scorm,link,assessment,interactive_document'],
             'title' => [$required, 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'content' => ['nullable', 'string'],

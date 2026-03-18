@@ -2,6 +2,7 @@ import AdminLayout from '@/layouts/AdminLayout';
 import PageHeader from '@/components/Admin/PageHeader';
 import DataTable from '@/components/Admin/DataTable';
 import { Link, useForm } from '@inertiajs/react';
+import type { FormEvent } from 'react';
 
 interface Permission {
   id: number;
@@ -28,7 +29,7 @@ interface Enrollment {
   course: Course;
   status: string;
   progress: number;
-  enrolled_at: string;
+  enrolled_at: string | null;
   completed_at: string | null;
 }
 
@@ -60,6 +61,19 @@ interface User {
   enrollments_count: number;
   module_completions: ModuleCompletion[];
   module_completions_count: number;
+  interactive_document_submissions: InteractiveDocumentSubmission[];
+}
+
+interface InteractiveDocumentSubmission {
+  id: number;
+  attempt_number: number;
+  status: string;
+  title: string;
+  document_code: string | null;
+  course_title: string | null;
+  module_title: string | null;
+  submitted_at: string | null;
+  receipt_url: string;
 }
 
 interface CourseOption {
@@ -85,13 +99,56 @@ export default function Show({ user, availableCourses }: { user: User; available
     assigned_via: 'manual',
   });
 
-  const handleEnroll = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleEnroll = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     post(`/admin/users/${user.id}/enrollments`, {
       preserveScroll: true,
       onSuccess: () => reset('course_id', 'due_at'),
     });
   };
+
+  const documentColumns = [
+    {
+      header: 'Documento',
+      accessor: (row: InteractiveDocumentSubmission) => (
+        <div>
+          <div className="font-semibold">{row.title}</div>
+          <div className="text-sm text-base-content/60">
+            {row.course_title ?? 'Sin curso'}
+            {row.module_title ? ` · ${row.module_title}` : ''}
+          </div>
+          {(row.document_code || row.attempt_number) && (
+            <div className="text-xs text-base-content/50">
+              {row.document_code ? `${row.document_code} · ` : ''}
+              Intento {row.attempt_number}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      header: 'Estado',
+      accessor: (row: InteractiveDocumentSubmission) => (
+        <div className={`badge ${
+          row.status === 'submitted'
+            ? 'badge-success'
+            : row.status === 'in_progress'
+              ? 'badge-warning'
+              : 'badge-ghost'
+        }`}>
+          {row.status === 'submitted'
+            ? 'Enviado'
+            : row.status === 'in_progress'
+              ? 'En progreso'
+              : row.status}
+        </div>
+      ),
+    },
+    {
+      header: 'Enviado',
+      accessor: (row: InteractiveDocumentSubmission) => formatDate(row.submitted_at),
+    },
+  ];
 
   const enrollmentColumns = [
     {
@@ -109,36 +166,40 @@ export default function Show({ user, availableCourses }: { user: User; available
         <div className="flex items-center gap-2">
           <progress
             className="progress progress-primary w-20"
-            value={row.progress}
+            value={normalizeProgress(row.progress)}
             max="100"
           ></progress>
-          <span className="text-sm">{row.progress}%</span>
+          <span className="text-sm">{normalizeProgress(row.progress).toFixed(0)}%</span>
         </div>
       ),
     },
     {
       header: 'Estado',
-      accessor: (row: Enrollment) => (
+      accessor: (row: Enrollment) => {
+        const displayStatus = getEnrollmentDisplayStatus(row);
+
+        return (
         <div
           className={`badge ${
-            row.status === 'completed'
+            displayStatus === 'completed'
               ? 'badge-success'
-              : row.status === 'active'
+              : displayStatus === 'active'
                 ? 'badge-primary'
                 : 'badge-ghost'
           }`}
         >
-          {row.status === 'completed'
+          {displayStatus === 'completed'
             ? 'Completado'
-            : row.status === 'active'
+            : displayStatus === 'active'
               ? 'En Progreso'
               : 'Abandonado'}
         </div>
-      ),
+      );
+      },
     },
     {
       header: 'Matriculado',
-      accessor: (row: Enrollment) => new Date(row.enrolled_at).toLocaleDateString(),
+      accessor: (row: Enrollment) => formatDate(row.enrolled_at, { dateOnly: true }),
     },
   ];
 
@@ -236,14 +297,14 @@ export default function Show({ user, availableCourses }: { user: User; available
                   <div className="text-sm text-base-content/60">Último Acceso</div>
                   <div>
                     {user.last_login_at
-                      ? new Date(user.last_login_at).toLocaleString()
+                      ? formatDate(user.last_login_at)
                       : 'Nunca'}
                   </div>
                 </div>
 
                 <div>
                   <div className="text-sm text-base-content/60">Registrado</div>
-                  <div>{new Date(user.created_at).toLocaleString()}</div>
+                  <div>{formatDate(user.created_at)}</div>
                 </div>
 
                 <div>
@@ -418,7 +479,7 @@ export default function Show({ user, availableCourses }: { user: User; available
                     <div>
                       <div className="font-semibold">{completion.module.title}</div>
                       <div className="text-sm text-base-content/60">
-                        Completado el {new Date(completion.completed_at).toLocaleDateString()}
+                        Completado el {formatDate(completion.completed_at, { dateOnly: true })}
                       </div>
                     </div>
                   </div>
@@ -431,6 +492,69 @@ export default function Show({ user, availableCourses }: { user: User; available
           </div>
         </div>
       )}
+
+      {user.interactive_document_submissions.length > 0 && (
+        <div className="card bg-base-100 shadow-xl mt-6">
+          <div className="card-body">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="card-title">Documentos interactivos</h2>
+                <p className="text-sm text-base-content/60">
+                  Comprobantes enviados por el usuario en su historial de documentos.
+                </p>
+              </div>
+              <div className="badge badge-outline">
+                {user.interactive_document_submissions.length} comprobantes
+              </div>
+            </div>
+
+            <DataTable
+              columns={documentColumns}
+              data={user.interactive_document_submissions}
+              actions={(submission) => (
+                <a
+                  href={submission.receipt_url}
+                  className="btn btn-ghost btn-sm"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Ver comprobante
+                </a>
+              )}
+            />
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
+}
+
+function normalizeProgress(value: number | null | undefined) {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return 0;
+  }
+
+  return Math.min(Math.max(value, 0), 100);
+}
+
+function getEnrollmentDisplayStatus(enrollment: Enrollment) {
+  return normalizeProgress(enrollment.progress) >= 100 || enrollment.status === 'completed'
+    ? 'completed'
+    : enrollment.status;
+}
+
+function formatDate(
+  value: string | null | undefined,
+  options?: { dateOnly?: boolean },
+) {
+  if (!value) {
+    return 'Sin fecha';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return 'Sin fecha';
+  }
+
+  return options?.dateOnly ? date.toLocaleDateString() : date.toLocaleString();
 }

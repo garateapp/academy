@@ -26,6 +26,8 @@ Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(funct
         ->name('users.toggle-status');
     Route::post('users/{user}/enrollments', [UserController::class, 'enroll'])
         ->name('users.enrollments.store');
+    Route::get('users/{user}/interactive-documents/{submission}/receipt', [UserController::class, 'interactiveDocumentReceipt'])
+        ->name('users.interactive-documents.receipt');
 
     // Roles Management
     Route::resource('roles', RoleController::class);
