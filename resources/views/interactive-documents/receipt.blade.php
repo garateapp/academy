@@ -2,8 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>Comprobante de documento interactivo</title>
+    <title>Comprobante de documento</title>
     <style>
+        @page {
+            margin: 28px 28px 64px 28px;
+        }
+
         body {
             font-family: DejaVu Sans, sans-serif;
             color: #1f2937;
@@ -16,7 +20,7 @@
         }
 
         .page {
-            padding: 28px;
+            padding: 0;
         }
 
         .header {
@@ -65,12 +69,69 @@
             word-break: break-all;
             font-size: 10px;
         }
+
+        .signature-preview {
+            display: inline-block;
+            max-width: 220px;
+            max-height: 90px;
+            border-bottom: 1px solid #94a3b8;
+            padding-bottom: 6px;
+        }
+
+        .document-footer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: -42px;
+            font-size: 9px;
+            color: #64748b;
+            border-top: 1px solid #cbd5e1;
+            padding-top: 6px;
+        }
+
+        .document-footer table {
+            width: 100%;
+            margin-top: 0;
+            border: 0;
+        }
+
+        .document-footer td {
+            border: 0;
+            padding: 0;
+            vertical-align: top;
+        }
+
+        .document-footer .footer-label {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
+    @php
+        $savedAt = $submission->updated_at ?? $submission->submitted_at ?? $submission->created_at;
+    @endphp
     <div class="page">
+        <div class="document-footer">
+            <table>
+                <tr>
+                    <td style="width: 13%;">
+                        <span class="footer-label">Hash de Contenido:</span>
+                    </td>
+                    <td style="width: 57%;">{{ $submission->content_hash ?? 'N/D' }}</td>
+                    <td style="width: 12%;">
+                        <span class="footer-label">Guardado:</span>
+                    </td>
+                    <td style="width: 18%;">
+                        {{ optional($savedAt)->format('d/m/Y H:i:s') ?? 'N/D' }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
         <div class="header">
-            <h1>Comprobante de documento interactivo</h1>
+            <h1>Comprobante de Firma documento</h1>
             <p class="muted">
                 {{ $schema['organization_name'] ?? config('app.name', 'Academy') }}
                 @if (!empty($schema['document_code']))
@@ -102,6 +163,14 @@
                         $value = $responses[$responseKey] ?? '';
                         if (is_bool($value)) {
                             $value = $value ? 'Si' : 'No';
+                        }
+
+                        if (($field['type'] ?? null) === 'signature') {
+                            if (is_string($value) && str_starts_with($value, 'data:image/png;base64,')) {
+                                return '<img src="' . e($value) . '" alt="Firma" class="signature-preview">';
+                            }
+
+                            return '<strong style="color:#0f766e;">________________</strong>';
                         }
 
                         $selectedOption = collect($field['options'] ?? [])->first(function ($option) use ($value) {
@@ -165,7 +234,17 @@
                         @endphp
                         <tr>
                             <td>{{ $field['label'] ?? $field['key'] }}</td>
-                            <td>{{ $value !== '' ? $value : '-' }}</td>
+                            <td>
+                                @if (($field['type'] ?? null) === 'signature')
+                                    @if (is_string($value) && str_starts_with($value, 'data:image/png;base64,'))
+                                        <img src="{{ $value }}" alt="Firma" class="signature-preview">
+                                    @else
+                                        -
+                                    @endif
+                                @else
+                                    {{ $value !== '' ? $value : '-' }}
+                                @endif
+                            </td>
                         </tr>
                         @if ($detailKey && $detailValue !== '')
                             <tr>

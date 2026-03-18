@@ -60,7 +60,7 @@ interface Props {
             id: string;
             key: string;
             label: string;
-            type: 'text' | 'textarea' | 'checkbox' | 'select' | 'radio' | 'date' | 'email' | 'number';
+            type: 'text' | 'textarea' | 'checkbox' | 'select' | 'radio' | 'date' | 'email' | 'number' | 'signature';
             required: boolean;
             placeholder: string;
             help_text: string;

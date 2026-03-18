@@ -6,7 +6,8 @@ export type InteractiveDocumentFieldType =
     | 'radio'
     | 'date'
     | 'email'
-    | 'number';
+    | 'number'
+    | 'signature';
 
 export interface InteractiveDocumentFieldOptionDetail {
     enabled: boolean;
@@ -131,7 +132,7 @@ export function normalizeInteractiveDocumentFields(rawFields: unknown): Interact
 }
 
 function isFieldType(value: unknown): value is InteractiveDocumentFieldType {
-    return ['text', 'textarea', 'checkbox', 'select', 'radio', 'date', 'email', 'number'].includes(String(value));
+    return ['text', 'textarea', 'checkbox', 'select', 'radio', 'date', 'email', 'number', 'signature'].includes(String(value));
 }
 
 function normalizeInteractiveDocumentOptions(rawOptions: unknown, fieldKey: string): InteractiveDocumentFieldOption[] {

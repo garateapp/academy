@@ -25,6 +25,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 const FIELD_TYPES: Array<{ value: InteractiveDocumentFieldType; label: string }> = [
     { value: 'text', label: 'Texto corto' },
     { value: 'textarea', label: 'Texto largo' },
+    { value: 'signature', label: 'Firma manuscrita' },
     { value: 'checkbox', label: 'Checkbox' },
     { value: 'select', label: 'Seleccionable' },
     { value: 'radio', label: 'Opcion unica' },

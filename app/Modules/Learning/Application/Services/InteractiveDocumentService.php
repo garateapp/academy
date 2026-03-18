@@ -22,6 +22,7 @@ class InteractiveDocumentService
         'date',
         'email',
         'number',
+        'signature',
     ];
 
     public function getSchema(CourseModule $module): array
@@ -307,6 +308,20 @@ class InteractiveDocumentService
                 continue;
             }
 
+            if ($field['type'] === 'signature') {
+                $signatureValue = is_scalar($value) ? trim((string) $value) : '';
+
+                if ($field['required'] && !$this->isValidSignatureDataUrl($signatureValue)) {
+                    $errors[$key] = 'La firma es obligatoria.';
+                } elseif ($signatureValue !== '' && !$this->isValidSignatureDataUrl($signatureValue)) {
+                    $errors[$key] = 'La firma enviada no es válida.';
+                }
+
+                $normalized[$key] = $this->isValidSignatureDataUrl($signatureValue) ? $signatureValue : '';
+
+                continue;
+            }
+
             $textValue = is_scalar($value) ? trim((string) $value) : '';
             $selectedOption = null;
 
@@ -377,6 +392,12 @@ class InteractiveDocumentService
 
             if ($field['type'] === 'checkbox') {
                 $normalized[$key] = filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? false;
+                continue;
+            }
+
+            if ($field['type'] === 'signature') {
+                $signatureValue = is_scalar($value) ? trim((string) $value) : '';
+                $normalized[$key] = $this->isValidSignatureDataUrl($signatureValue) ? $signatureValue : '';
                 continue;
             }
 
@@ -502,5 +523,14 @@ class InteractiveDocumentService
     private function toStableJson(array $payload): string
     {
         return (string) json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    }
+
+    private function isValidSignatureDataUrl(string $value): bool
+    {
+        if ($value === '') {
+            return false;
+        }
+
+        return preg_match('/^data:image\/png;base64,[A-Za-z0-9+\/=]+$/', $value) === 1;
     }
 }

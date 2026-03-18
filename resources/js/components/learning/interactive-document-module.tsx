@@ -7,7 +7,7 @@ import {
     type InteractiveDocumentFieldOption,
 } from '@/types/interactive-document';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, PointerEvent as ReactPointerEvent, SetStateAction } from 'react';
 
 interface InteractiveDocumentData extends InteractiveDocumentConfig {
     submission_id?: number | null;
@@ -718,7 +718,7 @@ function FieldControl({
     return (
         <span className={sharedClass}>
             <span className="flex w-full flex-col">
-                {field.type !== 'checkbox' && (
+                {field.type !== 'checkbox' && field.type !== 'signature' && (
                     <span className="mb-1 text-[11px] uppercase tracking-[0.18em] text-stone-500">
                         {field.label}
                         {field.required ? ' *' : ''}
@@ -824,15 +824,215 @@ function FieldControl({
                     </label>
                 )}
 
-                {field.help_text && (
+                {field.type === 'signature' && (
+                    <SignatureCanvasField
+                        label={field.label}
+                        required={field.required}
+                        value={typeof value === 'string' ? value : ''}
+                        disabled={disabled}
+                        error={error}
+                        helpText={field.help_text}
+                        onChange={(nextValue) => updateValue(nextValue)}
+                    />
+                )}
+
+                {field.type !== 'signature' && field.help_text && (
                     <span className="mt-1 text-xs text-stone-500">{field.help_text}</span>
                 )}
 
-                {error && (
+                {field.type !== 'signature' && error && (
                     <span className="mt-1 text-xs text-rose-500">{error}</span>
                 )}
             </span>
         </span>
+    );
+}
+
+function SignatureCanvasField({
+    label,
+    required,
+    value,
+    disabled,
+    error,
+    helpText,
+    onChange,
+}: {
+    label: string;
+    required: boolean;
+    value: string;
+    disabled: boolean;
+    error?: string;
+    helpText?: string;
+    onChange: (value: string) => void;
+}) {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const drawingRef = useRef(false);
+    const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const context = canvas?.getContext('2d');
+
+        if (!canvas || !context) {
+            return;
+        }
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (!value) {
+            return;
+        }
+
+        const image = new Image();
+        image.onload = () => {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        };
+        image.src = value;
+    }, [value]);
+
+    const withContext = (callback: (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => void) => {
+        const canvas = canvasRef.current;
+        const context = canvas?.getContext('2d');
+
+        if (!canvas || !context) {
+            return;
+        }
+
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+        context.lineWidth = 2.5;
+        context.strokeStyle = '#111827';
+        context.fillStyle = '#111827';
+
+        callback(canvas, context);
+    };
+
+    const getPoint = (event: ReactPointerEvent<HTMLCanvasElement>, canvas: HTMLCanvasElement) => {
+        const rect = canvas.getBoundingClientRect();
+
+        return {
+            x: ((event.clientX - rect.left) * canvas.width) / rect.width,
+            y: ((event.clientY - rect.top) * canvas.height) / rect.height,
+        };
+    };
+
+    const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
+        if (disabled) {
+            return;
+        }
+
+        withContext((canvas, context) => {
+            const point = getPoint(event, canvas);
+            drawingRef.current = true;
+            lastPointRef.current = point;
+            canvas.setPointerCapture(event.pointerId);
+
+            context.beginPath();
+            context.arc(point.x, point.y, 1.5, 0, Math.PI * 2);
+            context.fill();
+        });
+    };
+
+    const handlePointerMove = (event: ReactPointerEvent<HTMLCanvasElement>) => {
+        if (disabled || !drawingRef.current) {
+            return;
+        }
+
+        withContext((canvas, context) => {
+            const nextPoint = getPoint(event, canvas);
+            const previousPoint = lastPointRef.current ?? nextPoint;
+
+            context.beginPath();
+            context.moveTo(previousPoint.x, previousPoint.y);
+            context.lineTo(nextPoint.x, nextPoint.y);
+            context.stroke();
+
+            lastPointRef.current = nextPoint;
+        });
+    };
+
+    const commitSignature = () => {
+        withContext((canvas) => {
+            onChange(canvas.toDataURL('image/png'));
+        });
+    };
+
+    const handlePointerUp = (event: ReactPointerEvent<HTMLCanvasElement>) => {
+        if (disabled || !drawingRef.current) {
+            return;
+        }
+
+        drawingRef.current = false;
+        lastPointRef.current = null;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+        commitSignature();
+    };
+
+    const clearSignature = () => {
+        withContext((canvas, context) => {
+            drawingRef.current = false;
+            lastPointRef.current = null;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        onChange('');
+    };
+
+    return (
+        <div className="rounded-[1.5rem] border border-stone-300 bg-stone-50 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-stone-500">
+                        {label}
+                        {required ? ' *' : ''}
+                    </p>
+                    <p className="mt-1 text-sm text-stone-600">
+                        Dibuja tu firma dentro del recuadro.
+                    </p>
+                </div>
+                {!disabled && (
+                    <button
+                        type="button"
+                        className="btn btn-ghost btn-sm"
+                        onClick={clearSignature}
+                    >
+                        Limpiar firma
+                    </button>
+                )}
+            </div>
+
+            <div className="mt-4 rounded-[1.25rem] border border-dashed border-stone-300 bg-white p-3">
+                <canvas
+                    ref={canvasRef}
+                    width={720}
+                    height={220}
+                    className={`block h-44 w-full rounded-xl bg-white touch-none ${
+                        disabled ? 'cursor-default' : 'cursor-crosshair'
+                    }`}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerLeave={handlePointerUp}
+                />
+            </div>
+
+            {!value && (
+                <p className="mt-3 text-xs text-stone-500">
+                    Aun no hay una firma registrada.
+                </p>
+            )}
+
+            {helpText && (
+                <span className="mt-2 block text-xs text-stone-500">{helpText}</span>
+            )}
+
+            {error && (
+                <span className="mt-2 block text-xs text-rose-500">{error}</span>
+            )}
+        </div>
     );
 }
 
