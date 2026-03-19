@@ -19,7 +19,7 @@ import {
     type InteractiveDocumentFieldOptionDetail,
     type InteractiveDocumentFieldType,
 } from '@/types/interactive-document';
-import { Eye, GripVertical, Minus, Plus, Settings2, Table2, Trash2 } from 'lucide-react';
+import { Copy, Eye, GripVertical, Minus, Plus, Settings2, Table2, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 const FIELD_TYPES: Array<{ value: InteractiveDocumentFieldType; label: string }> = [
@@ -66,6 +66,54 @@ function cloneConfig(config: InteractiveDocumentConfig): InteractiveDocumentConf
                 ...option,
                 detail: { ...option.detail },
             })),
+        })),
+    };
+}
+
+function buildUniqueFieldKey(baseKey: string, fields: InteractiveDocumentField[]): string {
+    const existingKeys = new Set(fields.map((field) => field.key));
+    const seed = `${baseKey || 'field'}_copy`;
+    let candidate = seed;
+    let counter = 2;
+
+    while (existingKeys.has(candidate)) {
+        candidate = `${seed}_${counter}`;
+        counter += 1;
+    }
+
+    return candidate;
+}
+
+function buildUniqueFieldLabel(baseLabel: string, fields: InteractiveDocumentField[]): string {
+    const existingLabels = new Set(fields.map((field) => field.label));
+    const seed = `${baseLabel || 'Campo'} (copia)`;
+    let candidate = seed;
+    let counter = 2;
+
+    while (existingLabels.has(candidate)) {
+        candidate = `${seed} ${counter}`;
+        counter += 1;
+    }
+
+    return candidate;
+}
+
+function duplicateFieldDefinition(
+    source: InteractiveDocumentField,
+    fields: InteractiveDocumentField[],
+): InteractiveDocumentField {
+    const nextKey = buildUniqueFieldKey(source.key, fields);
+    const timestamp = Date.now();
+
+    return {
+        ...source,
+        id: `field-${nextKey}-${timestamp}`,
+        key: nextKey,
+        label: buildUniqueFieldLabel(source.label, fields),
+        options: source.options.map((option, index) => ({
+            ...option,
+            id: `${nextKey}-option-${timestamp}-${index + 1}`,
+            detail: { ...option.detail },
         })),
     };
 }
@@ -460,6 +508,24 @@ export default function InteractiveDocumentEditor({
         setFieldId(field.id);
     };
 
+    const duplicateField = (id: string) => {
+        const sourceIndex = draftConfig.fields.findIndex((field) => field.id === id);
+        if (sourceIndex === -1) {
+            return;
+        }
+
+        const source = draftConfig.fields[sourceIndex];
+        const duplicate = duplicateFieldDefinition(source, draftConfig.fields);
+        const nextFields = [...draftConfig.fields];
+        nextFields.splice(sourceIndex + 1, 0, duplicate);
+
+        commitConfig({
+            ...draftConfig,
+            fields: nextFields,
+        });
+        setFieldId(duplicate.id);
+    };
+
     const removeField = (id: string) => {
         commitConfig({
             ...draftConfig,
@@ -590,6 +656,16 @@ export default function InteractiveDocumentEditor({
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-1">
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="size-8 text-sky-700"
+                                                        onClick={() => duplicateField(field.id)}
+                                                        title="Clonar campo"
+                                                    >
+                                                        <Copy className="size-4" />
+                                                    </Button>
                                                     <Button
                                                         type="button"
                                                         variant="ghost"
