@@ -774,7 +774,7 @@ function FieldControl({
 
                 {field.type === 'radio' && (
                     <span className="space-y-3">
-                        <span className="rounded-2xl border border-stone-300 bg-stone-50 p-3">
+                        <span className="rounded-2xl">
                             <span className="grid gap-3 md:grid-cols-2">
                                 {field.options.map((option) => (
                                     <label
