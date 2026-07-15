@@ -67,7 +67,7 @@ class AssessmentQuestionController extends Controller
             );
         });
 
-        return redirect()->route('assessments.show', $assessment)
+        return redirect()->route('admin.assessments.show', $assessment)
             ->with('success', 'Pregunta agregada exitosamente.');
     }
 
@@ -124,7 +124,7 @@ class AssessmentQuestionController extends Controller
             );
         });
 
-        return redirect()->route('assessments.show', $assessment)
+        return redirect()->route('admin.assessments.show', $assessment)
             ->with('success', 'Pregunta actualizada exitosamente.');
     }
 
