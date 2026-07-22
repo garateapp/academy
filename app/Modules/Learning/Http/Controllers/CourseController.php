@@ -146,7 +146,7 @@ class CourseController extends Controller
             ->with('success', 'Curso creado exitosamente.');
     }
 
-    public function show(Course $course): Response
+    public function show(Course $course): Response|RedirectResponse
     {
         $user = auth()->user();
         $roleName = strtolower($user->role?->name ?? '');
