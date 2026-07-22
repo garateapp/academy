@@ -63,13 +63,13 @@ class ModuleViewController extends Controller
         $attemptsUsed = 0;
         $latestAttempt = null;
         if ($module->assessment) {
-            $attemptsUsed = \App\Modules\Assessment\Domain\AssessmentAttempt::where('user_id', $user->id)
+            $attemptsCollection = \App\Modules\Assessment\Domain\AssessmentAttempt::where('user_id', $user->id)
                 ->where('assessment_id', $module->assessment->id)
                 ->whereIn('status', ['submitted', 'graded'])
                 ->orderByDesc('attempt_number')
                 ->get();
-            $latestAttempt = $attemptsUsed > 0 ? $attemptsUsed->first() : null;
-            $attemptsUsed = $attemptsUsed->count();
+            $latestAttempt = $attemptsCollection->isNotEmpty() ? $attemptsCollection->first() : null;
+            $attemptsUsed = $attemptsCollection->count();
         }
 
         $interactiveDocument = null;
