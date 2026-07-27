@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler, useState, useEffect, useCallback } from 'react';
+import { FormEventHandler, useState, useEffect, useCallback, useRef } from 'react';
 
 interface Question {
   id: number;
@@ -75,6 +75,8 @@ export default function Take({
     responses: {},
   });
 
+  const handleSubmitRef = useRef<FormEventHandler>(null);
+
   const handleSubmit: FormEventHandler = useCallback(async (e) => {
     if (e) e.preventDefault();
     if (submitting) return;
@@ -117,6 +119,10 @@ export default function Take({
   }, [submitting, data.responses, questions, assessment.id, attempt.id, post]);
 
   useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  });
+
+  useEffect(() => {
     if (assessment.time_limit_minutes) {
       const startTime = new Date(attempt.started_at).getTime();
       const endTime = startTime + assessment.time_limit_minutes * 60 * 1000;
@@ -127,13 +133,13 @@ export default function Take({
         setTimeRemaining(Math.floor(remaining / 1000));
 
         if (remaining === 0) {
-          handleSubmit();
+          handleSubmitRef.current?.();
         }
       }, 1000);
 
       return () => clearInterval(interval);
     }
-  }, [assessment.time_limit_minutes, attempt.started_at, handleSubmit]);
+  }, [assessment.time_limit_minutes, attempt.started_at]);
 
   const handleAnswer = (questionId: number, answer: string) => {
     setData('responses', {
