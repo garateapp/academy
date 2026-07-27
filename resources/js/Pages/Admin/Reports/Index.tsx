@@ -68,6 +68,9 @@ export default function Index({
   certificatesByMonth,
   activeUsersLast30,
   completionRate,
+  totalTrainingHours,
+  averageHoursPerUser,
+  uniqueUsersWithCompletions,
   filters,
   users,
   courses,
@@ -80,6 +83,9 @@ export default function Index({
   certificatesByMonth: CertificatesByMonth[];
   activeUsersLast30: number;
   completionRate: number;
+  totalTrainingHours: number;
+  averageHoursPerUser: number;
+  uniqueUsersWithCompletions: number;
   filters: {
     user_id?: string | number | null;
     course_id?: string | number | null;
@@ -218,7 +224,7 @@ export default function Index({
       </div>
 
       <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4">
           <div className="stat bg-base-100 shadow rounded-lg">
             <div className="stat-title">Usuarios</div>
             <div className="stat-value text-primary">{totals.users}</div>
@@ -238,6 +244,16 @@ export default function Index({
             <div className="stat-title">Certificados</div>
             <div className="stat-value text-success">{totals.certificates}</div>
             <div className="stat-desc">Evaluaciones: {totals.assessments}</div>
+          </div>
+          <div className="stat bg-base-100 shadow rounded-lg">
+            <div className="stat-title">Horas de Capacitación</div>
+            <div className="stat-value text-info">{totalTrainingHours}h</div>
+            <div className="stat-desc">Tiempo invertido en cursos finalizados</div>
+          </div>
+          <div className="stat bg-base-100 shadow rounded-lg">
+            <div className="stat-title">Promedio por Usuario</div>
+            <div className="stat-value text-warning">{averageHoursPerUser}h</div>
+            <div className="stat-desc">Usuarios con cursos finalizados: {uniqueUsersWithCompletions}</div>
           </div>
         </div>
 

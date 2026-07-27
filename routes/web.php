@@ -71,12 +71,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         if ($isAdmin) {
             // Admin stats
+            $totalTrainingSeconds = (int) \App\Modules\Learning\Domain\Enrollment::query()
+                ->where('status', 'completed')
+                ->join('module_completions', 'module_completions.enrollment_id', '=', 'enrollments.id')
+                ->sum('module_completions.time_spent_seconds');
+
+            $uniqueUsersWithCompletions = (int) \App\Modules\Learning\Domain\Enrollment::query()
+                ->where('status', 'completed')
+                ->join('module_completions', 'module_completions.enrollment_id', '=', 'enrollments.id')
+                ->distinct('enrollments.user_id')
+                ->count('enrollments.user_id');
+
+            $totalTrainingHours = round($totalTrainingSeconds / 3600, 1);
+            $averageHoursPerUser = $uniqueUsersWithCompletions > 0
+                ? round($totalTrainingHours / $uniqueUsersWithCompletions, 1)
+                : 0;
+
             $stats = [
                 'total_users' => \App\Modules\Identity\Domain\User::count(),
                 'total_courses' => \App\Modules\Learning\Domain\Course::count(),
                 'total_assessments' => \App\Modules\Assessment\Domain\Assessment::count(),
                 'total_certificates' => \App\Modules\Certificate\Domain\Certificate::count(),
                 'active_enrollments' => \App\Modules\Learning\Domain\Enrollment::where('status', 'active')->count(),
+                'total_training_hours' => $totalTrainingHours,
+                'average_hours_per_user' => $averageHoursPerUser,
+                'unique_users_with_completions' => $uniqueUsersWithCompletions,
             ];
 
             // Recent activities from audit log

@@ -213,6 +213,26 @@ class ReportController extends Controller
             ? round(($completedEnrollments / $totals['enrollments']) * 100, 1)
             : 0;
 
+        $totalTrainingQuery = Enrollment::query()
+            ->where('status', 'completed')
+            ->join('module_completions', 'module_completions.enrollment_id', '=', 'enrollments.id');
+        $applyEnrollmentFilters($totalTrainingQuery);
+        $totalTrainingSeconds = (int) $totalTrainingQuery
+            ->sum('module_completions.time_spent_seconds');
+
+        $uniqueUsersQuery = Enrollment::query()
+            ->where('status', 'completed')
+            ->join('module_completions', 'module_completions.enrollment_id', '=', 'enrollments.id');
+        $applyEnrollmentFilters($uniqueUsersQuery);
+        $uniqueUsersWithCompletions = $uniqueUsersQuery
+            ->distinct('enrollments.user_id')
+            ->count('enrollments.user_id');
+
+        $totalTrainingHours = round($totalTrainingSeconds / 3600, 1);
+        $averageHoursPerUser = $uniqueUsersWithCompletions > 0
+            ? round($totalTrainingHours / $uniqueUsersWithCompletions, 1)
+            : 0;
+
         $users = User::select('id', 'name', 'email')
             ->orderBy('name')
             ->get()
@@ -248,6 +268,9 @@ class ReportController extends Controller
             'certificatesByMonth' => $certificatesByMonth,
             'activeUsersLast30' => $activeUsersLast30,
             'completionRate' => $completionRate,
+            'totalTrainingHours' => $totalTrainingHours,
+            'averageHoursPerUser' => $averageHoursPerUser,
+            'uniqueUsersWithCompletions' => $uniqueUsersWithCompletions,
             'filters' => $filters,
             'users' => $users,
             'courses' => $courses,

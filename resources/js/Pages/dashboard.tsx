@@ -17,6 +17,9 @@ interface Stats {
   total_assessments?: number;
   total_certificates?: number;
   active_enrollments?: number;
+  total_training_hours?: number;
+  average_hours_per_user?: number;
+  unique_users_with_completions?: number;
   my_courses?: number;
   my_certificates?: number;
   pending_assessments?: number;
@@ -394,7 +397,7 @@ export default function Dashboard({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <div className="stat bg-base-100 shadow rounded-lg">
               <div className="stat-figure text-primary">
                 <svg
@@ -485,6 +488,48 @@ export default function Dashboard({
               <div className="stat-title">Certificados</div>
               <div className="stat-value text-success">{stats.total_certificates || 0}</div>
               <div className="stat-desc">Emitidos</div>
+            </div>
+
+            <div className="stat bg-base-100 shadow rounded-lg">
+              <div className="stat-figure text-info">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block w-8 h-8 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div className="stat-title">Horas de Capacitacion</div>
+              <div className="stat-value text-info">{stats.total_training_hours || 0}h</div>
+              <div className="stat-desc">Tiempo invertido en cursos finalizados</div>
+            </div>
+
+            <div className="stat bg-base-100 shadow rounded-lg">
+              <div className="stat-figure text-warning">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block w-8 h-8 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                  />
+                </svg>
+              </div>
+              <div className="stat-title">Promedio por Usuario</div>
+              <div className="stat-value text-warning">{stats.average_hours_per_user || 0}h</div>
+              <div className="stat-desc">Usuarios con cursos finalizados: {stats.unique_users_with_completions || 0}</div>
             </div>
           </div>
 
