@@ -222,7 +222,7 @@ class InteractiveDocumentService
             ],
             [
                 'completed_at' => now(),
-                'time_spent_seconds' => 0,
+                'time_spent_seconds' => ($module->duration_minutes ?? 1) * 60,
                 'score' => null,
             ]
         );
@@ -249,6 +249,8 @@ class InteractiveDocumentService
                 metadata: ['source' => 'interactive_document']
             );
         }
+
+        $enrollment->autoCompleteIfReady();
 
         return $submission;
     }

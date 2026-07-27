@@ -2,7 +2,9 @@
 
 namespace App\Modules\Learning\Domain;
 
+use App\Modules\Assessment\Domain\AssessmentAttempt;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Enrollment extends Model
 {
@@ -21,10 +23,10 @@ class Enrollment extends Model
     ];
 
     protected $casts = [
-        'due_at' => 'datetime',
-        'started_at' => 'datetime',
+        'due_at'       => 'datetime',
+        'started_at'   => 'datetime',
         'completed_at' => 'datetime',
-        'score' => 'decimal:2',
+        'score'        => 'decimal:2',
     ];
 
     public function user()
@@ -57,6 +59,11 @@ class Enrollment extends Model
         return $this->hasMany(UserActivityLog::class);
     }
 
+    public function assessmentAttempts(): HasMany
+    {
+        return $this->hasMany(AssessmentAttempt::class);
+    }
+
     public function isCompleted(): bool
     {
         return $this->status === 'completed';
@@ -64,7 +71,7 @@ class Enrollment extends Model
 
     public function isOverdue(): bool
     {
-        return $this->due_at && $this->due_at->isPast() && !$this->isCompleted();
+        return $this->due_at && $this->due_at->isPast() && ! $this->isCompleted();
     }
 
     public function calculateProgress(): float
@@ -80,5 +87,23 @@ class Enrollment extends Model
             ->count();
 
         return ($completedModules / $totalModules) * 100;
+    }
+
+    public function autoCompleteIfReady(): void
+    {
+        if ($this->status === 'completed') {
+            return;
+        }
+
+        if ($this->calculateProgress() >= 100) {
+            $this->update([
+                'status'       => 'completed',
+                'completed_at' => now(),
+            ]);
+
+            // Auto-issue certificate if assessment was passed
+            $certificateService = app(\App\Modules\Certificate\Application\Services\CertificateService::class);
+            $certificateService->autoIssueOnCompletion($this);
+        }
     }
 }

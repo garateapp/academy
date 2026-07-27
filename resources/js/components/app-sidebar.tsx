@@ -13,7 +13,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, GraduationCap, History, LayoutGrid } from 'lucide-react';
+import { Award, BookOpen, GraduationCap, History, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -36,6 +36,11 @@ const mainNavItems: NavItem[] = [
         title: 'Mi historial',
         href: '/my-history',
         icon: History,
+    },
+    {
+        title: 'Mis certificados',
+        href: '/my-certificates',
+        icon: Award,
     },
 ];
 

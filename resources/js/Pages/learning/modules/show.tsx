@@ -2,8 +2,8 @@ import InteractiveDocumentModule from '@/components/learning/interactive-documen
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowLeft, Clock, PlayCircle, Video } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock, PlayCircle, Video } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 interface CourseSummary {
     id: number;
@@ -38,6 +38,12 @@ interface Props {
     enrollment: EnrollmentSummary;
     progress: ProgressData | null;
     isCompleted: boolean;
+    nextModule?: {
+        id: number;
+        title: string;
+        type: ModuleData['type'];
+        url: string;
+    } | null;
     attemptsUsed?: number;
     maxAttempts?: number | null;
     latestAttempt?: {
@@ -116,6 +122,7 @@ export default function ModuleShow({
     enrollment,
     progress,
     isCompleted,
+    nextModule = null,
     attemptsUsed = 0,
     maxAttempts = null,
     latestAttempt = null,
@@ -149,7 +156,7 @@ export default function ModuleShow({
     const isAttemptsBlocked =
         maxAttempts !== null && maxAttempts > 0 && attemptsUsed >= maxAttempts;
 
-    const sendProgress = async (event: string, watchedSeconds = 0) => {
+    const sendProgress = useCallback(async (event: string, watchedSeconds = 0) => {
         if (!videoRef.current) return;
         const duration = videoRef.current.duration;
         if (!duration || Number.isNaN(duration) || duration <= 0) {
@@ -188,7 +195,7 @@ export default function ModuleShow({
         } catch {
             // ignore network errors for now
         }
-    };
+    }, [module.id]);
 
     const markCompleted = async () => {
         try {
@@ -284,7 +291,7 @@ export default function ModuleShow({
             video.removeEventListener('timeupdate', handleTimeUpdate);
             document.removeEventListener('visibilitychange', handleVisibility);
         };
-    }, []);
+    }, [progress?.last_position_seconds, sendProgress]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -460,6 +467,41 @@ export default function ModuleShow({
                         readonly={false}
                         onSubmitted={handleInteractiveDocumentSubmitted}
                     />
+                )}
+
+                {completed && nextModule && (
+                    <div className="flex flex-col gap-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-6 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-3">
+                            <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-emerald-600" />
+                            <div>
+                                <p className="font-semibold text-emerald-950">Módulo completado</p>
+                                <p className="mt-1 text-sm text-emerald-700">
+                                    Continúa con: {nextModule.title}
+                                </p>
+                            </div>
+                        </div>
+                        <Link href={nextModule.url} className="btn btn-primary shrink-0">
+                            Ir al siguiente módulo
+                            <ArrowRight className="size-4" />
+                        </Link>
+                    </div>
+                )}
+
+                {completed && !nextModule && !assessmentId && (
+                    <div className="flex flex-col gap-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-6 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-3">
+                            <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-emerald-600" />
+                            <div>
+                                <p className="font-semibold text-emerald-950">Curso completado</p>
+                                <p className="mt-1 text-sm text-emerald-700">
+                                    Finalizaste todos los módulos de este curso.
+                                </p>
+                            </div>
+                        </div>
+                        <Link href={`/courses/${course.id}`} className="btn btn-outline shrink-0">
+                            Volver al curso
+                        </Link>
+                    </div>
                 )}
 
                 <div className="rounded-3xl bg-emerald-50 p-6 text-sm text-emerald-700">

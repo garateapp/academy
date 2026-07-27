@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Modules\Assessment\Http\Controllers\AssessmentAttemptController::index
- * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:196
+ * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:317
  * @route '/admin/assessment-results'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Modules\Assessment\Http\Controllers\AssessmentAttemptController::index
- * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:196
+ * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:317
  * @route '/admin/assessment-results'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Modules\Assessment\Http\Controllers\AssessmentAttemptController::index
- * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:196
+ * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:317
  * @route '/admin/assessment-results'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Modules\Assessment\Http\Controllers\AssessmentAttemptController::index
- * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:196
+ * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:317
  * @route '/admin/assessment-results'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Modules\Assessment\Http\Controllers\AssessmentAttemptController::index
- * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:196
+ * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:317
  * @route '/admin/assessment-results'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Modules\Assessment\Http\Controllers\AssessmentAttemptController::index
- * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:196
+ * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:317
  * @route '/admin/assessment-results'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Modules\Assessment\Http\Controllers\AssessmentAttemptController::index
- * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:196
+ * @see app/Modules/Assessment/Http/Controllers/AssessmentAttemptController.php:317
  * @route '/admin/assessment-results'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::store
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:15
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:49
  * @route '/courses/{course}/attendance-sessions'
  */
 export const store = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::store
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:15
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:49
  * @route '/courses/{course}/attendance-sessions'
  */
 store.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { course: number | { id: number } } | [course: number | { id:
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::store
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:15
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:49
  * @route '/courses/{course}/attendance-sessions'
  */
 store.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { course: number | { id: number } } | [course: number | { id
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::store
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:15
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:49
  * @route '/courses/{course}/attendance-sessions'
  */
     const storeForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ store.post = (args: { course: number | { id: number } } | [course: number | { id
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::store
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:15
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:49
  * @route '/courses/{course}/attendance-sessions'
  */
         storeForm.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -80,7 +80,7 @@ store.post = (args: { course: number | { id: number } } | [course: number | { id
     store.form = storeForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::roster
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:35
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:69
  * @route '/courses/{course}/attendance-sessions/{session}/roster'
  */
 export const roster = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -95,7 +95,7 @@ roster.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::roster
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:35
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:69
  * @route '/courses/{course}/attendance-sessions/{session}/roster'
  */
 roster.url = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions) => {
@@ -125,7 +125,7 @@ roster.url = (args: { course: number | { id: number }, session: number | { id: n
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::roster
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:35
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:69
  * @route '/courses/{course}/attendance-sessions/{session}/roster'
  */
 roster.post = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -135,7 +135,7 @@ roster.post = (args: { course: number | { id: number }, session: number | { id: 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::roster
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:35
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:69
  * @route '/courses/{course}/attendance-sessions/{session}/roster'
  */
     const rosterForm = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -145,7 +145,7 @@ roster.post = (args: { course: number | { id: number }, session: number | { id: 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::roster
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:35
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:69
  * @route '/courses/{course}/attendance-sessions/{session}/roster'
  */
         rosterForm.post = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -156,7 +156,7 @@ roster.post = (args: { course: number | { id: number }, session: number | { id: 
     roster.form = rosterForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::records
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:63
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:97
  * @route '/courses/{course}/attendance-sessions/{session}/records'
  */
 export const records = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -171,7 +171,7 @@ records.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::records
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:63
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:97
  * @route '/courses/{course}/attendance-sessions/{session}/records'
  */
 records.url = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions) => {
@@ -201,7 +201,7 @@ records.url = (args: { course: number | { id: number }, session: number | { id: 
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::records
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:63
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:97
  * @route '/courses/{course}/attendance-sessions/{session}/records'
  */
 records.post = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -211,7 +211,7 @@ records.post = (args: { course: number | { id: number }, session: number | { id:
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::records
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:63
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:97
  * @route '/courses/{course}/attendance-sessions/{session}/records'
  */
     const recordsForm = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -221,7 +221,7 @@ records.post = (args: { course: number | { id: number }, session: number | { id:
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\AttendanceSessionController::records
- * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:63
+ * @see app/Modules/Learning/Http/Controllers/AttendanceSessionController.php:97
  * @route '/courses/{course}/attendance-sessions/{session}/records'
  */
         recordsForm.post = (args: { course: number | { id: number }, session: number | { id: number } } | [course: number | { id: number }, session: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

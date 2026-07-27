@@ -3,12 +3,12 @@
 namespace App\Modules\Learning\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Learning\Application\Services\InteractiveDocumentService;
 use App\Modules\Learning\Domain\CourseModule;
 use App\Modules\Learning\Domain\Enrollment;
 use App\Modules\Learning\Domain\InteractiveDocumentSubmission;
 use App\Modules\Learning\Domain\ModuleCompletion;
 use App\Modules\Learning\Domain\ModuleProgress;
-use App\Modules\Learning\Application\Services\InteractiveDocumentService;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,29 +26,41 @@ class ModuleViewController extends Controller
             ->where('course_id', $module->course_id)
             ->first();
 
-        if (!$enrollment) {
+        if (! $enrollment) {
             abort(403);
         }
 
         $module->load(['course', 'assessment']);
 
-        $moduleOrder = $module->course->modules()->orderBy('sort_order')->get(['id']);
+        $moduleOrder = $module->course->modules()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['id', 'title', 'type']);
         $completedModuleIds = ModuleCompletion::where('user_id', $user->id)
             ->where('enrollment_id', $enrollment->id)
             ->pluck('module_id')
             ->all();
 
         $unlockedModuleIds = [];
+
         foreach ($moduleOrder as $orderedModule) {
             $unlockedModuleIds[] = $orderedModule->id;
-            if (!in_array($orderedModule->id, $completedModuleIds, true)) {
+
+            if (! in_array($orderedModule->id, $completedModuleIds, true)) {
                 break;
             }
         }
 
-        if (!in_array($module->id, $unlockedModuleIds, true)) {
+        if (! in_array($module->id, $unlockedModuleIds, true)) {
             abort(403);
         }
+
+        $currentModuleIndex = $moduleOrder->search(
+            fn (CourseModule $orderedModule) => $orderedModule->id === $module->id
+        );
+        $nextModule = $currentModuleIndex !== false
+            ? $moduleOrder->get($currentModuleIndex + 1)
+            : null;
 
         $isCompleted = ModuleCompletion::where('user_id', $user->id)
             ->where('enrollment_id', $enrollment->id)
@@ -60,8 +72,9 @@ class ModuleViewController extends Controller
             ->where('module_id', $module->id)
             ->first();
 
-        $attemptsUsed = 0;
+        $attemptsUsed  = 0;
         $latestAttempt = null;
+
         if ($module->assessment) {
             $attemptsCollection = \App\Modules\Assessment\Domain\AssessmentAttempt::where('user_id', $user->id)
                 ->where('assessment_id', $module->assessment->id)
@@ -69,60 +82,69 @@ class ModuleViewController extends Controller
                 ->orderByDesc('attempt_number')
                 ->get();
             $latestAttempt = $attemptsCollection->isNotEmpty() ? $attemptsCollection->first() : null;
-            $attemptsUsed = $attemptsCollection->count();
+            $attemptsUsed  = $attemptsCollection->count();
         }
 
         $interactiveDocument = null;
+
         if ($module->type === 'interactive_document') {
-            $submission = $this->interactiveDocumentService->getLatestSubmission($module, $enrollment, $user);
+            $submission        = $this->interactiveDocumentService->getLatestSubmission($module, $enrollment, $user);
             $submissionHistory = $this->interactiveDocumentService
                 ->getSubmissionHistory($module, $enrollment, $user)
                 ->map(fn (InteractiveDocumentSubmission $item) => [
-                    'id' => $item->id,
+                    'id'             => $item->id,
                     'attempt_number' => $item->attempt_number,
-                    'status' => $item->status,
-                    'submitted_at' => $item->submitted_at?->toIso8601String(),
-                    'completed_at' => $item->completed_at?->toIso8601String(),
-                    'receipt_url' => $item->submitted_at
+                    'status'         => $item->status,
+                    'submitted_at'   => $item->submitted_at?->toIso8601String(),
+                    'completed_at'   => $item->completed_at?->toIso8601String(),
+                    'receipt_url'    => $item->submitted_at
                         ? route('modules.interactive-document.receipt', ['module' => $module->id, 'submission' => $item->id])
                         : null,
                 ])
                 ->values()
                 ->all();
 
-            $schema = $this->interactiveDocumentService->getSchema($module);
+            $schema              = $this->interactiveDocumentService->getSchema($module);
             $interactiveDocument = [
                 ...$schema,
-                'submission_id' => $submission?->id,
-                'attempt_number' => $submission?->attempt_number,
-                'status' => $submission?->status ?? 'not_started',
-                'opened_at' => $submission?->opened_at?->toIso8601String(),
-                'updated_at' => $submission?->updated_at?->toIso8601String(),
-                'submitted_at' => $submission?->submitted_at?->toIso8601String(),
-                'completed_at' => $submission?->completed_at?->toIso8601String(),
-                'responses' => $submission?->responses_json ?? [],
-                'declaration_accepted' => (bool) ($submission?->declaration_accepted ?? false),
+                'submission_id'         => $submission?->id,
+                'attempt_number'        => $submission?->attempt_number,
+                'status'                => $submission?->status ?? 'not_started',
+                'opened_at'             => $submission?->opened_at?->toIso8601String(),
+                'updated_at'            => $submission?->updated_at?->toIso8601String(),
+                'submitted_at'          => $submission?->submitted_at?->toIso8601String(),
+                'completed_at'          => $submission?->completed_at?->toIso8601String(),
+                'responses'             => $submission?->responses_json ?? [],
+                'declaration_accepted'  => (bool) ($submission?->declaration_accepted ?? false),
                 'can_start_new_attempt' => $submission?->submitted_at !== null || $submission === null,
-                'submissions' => $submissionHistory,
+                'submissions'           => $submissionHistory,
             ];
         }
 
         return Inertia::render('learning/modules/show', [
-            'course' => $module->course,
-            'module' => $module,
+            'course'     => $module->course,
+            'module'     => $module,
             'enrollment' => [
-                'id' => $enrollment->id,
+                'id'     => $enrollment->id,
                 'status' => $enrollment->status,
                 'due_at' => $enrollment->due_at?->toDateString(),
             ],
-            'progress' => $progress,
+            'progress'    => $progress,
             'isCompleted' => $isCompleted,
-            'attemptsUsed' => $attemptsUsed,
-            'maxAttempts' => $module->assessment?->max_attempts,
+            'nextModule'  => $nextModule
+                ? [
+                    'id'    => $nextModule->id,
+                    'title' => $nextModule->title,
+                    'type'  => $nextModule->type,
+                    'url'   => route('modules.show', $nextModule),
+                ]
+                : null,
+            'attemptsUsed'  => $attemptsUsed,
+            'maxAttempts'   => $module->assessment?->max_attempts,
             'latestAttempt' => $latestAttempt
                 ? [
-                    'id' => $latestAttempt->id,
-                    'status' => $latestAttempt->status,
+                    'id'            => $latestAttempt->id,
+                    'status'        => $latestAttempt->status,
                     'assessment_id' => $latestAttempt->assessment_id,
                 ]
                 : null,

@@ -3,16 +3,17 @@
 namespace App\Modules\Certificate\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Audit\Application\AuditService;
 use App\Modules\Certificate\Application\Services\CertificateService;
 use App\Modules\Certificate\Domain\Certificate;
 use App\Modules\Certificate\Domain\CertificateTemplate;
 use App\Modules\Certificate\Http\Requests\IssueCertificateRequest;
-use App\Modules\Audit\Application\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CertificateController extends Controller
 {
@@ -85,7 +86,7 @@ class CertificateController extends Controller
         $certificate->delete();
 
         $this->auditService->log('certificate.deleted', [
-            'certificate_id' => $certificateData['id'],
+            'certificate_id'     => $certificateData['id'],
             'certificate_number' => $certificateData['certificate_number'],
         ]);
 
@@ -114,9 +115,12 @@ class CertificateController extends Controller
     {
         $this->authorize('view', $certificate);
 
-        if (!$certificate->pdf_path || !Storage::disk('public')->exists($certificate->pdf_path)) {
-            // Regenerate PDF if missing
-            $this->certificateService->generatePdf($certificate);
+        if (! $certificate->pdf_path || ! Storage::disk('public')->exists($certificate->pdf_path)) {
+            if ($certificate->course_id) {
+                $this->certificateService->generateDiplomaPdf($certificate);
+            } else {
+                $this->certificateService->generatePdf($certificate);
+            }
         }
 
         return Storage::disk('public')->download(
@@ -134,9 +138,46 @@ class CertificateController extends Controller
         return back()->with('success', 'PDF regenerado exitosamente.');
     }
 
+    public function diploma(Certificate $certificate): StreamedResponse
+    {
+        $this->authorize('view', $certificate);
+
+        $this->certificateService->generateDiplomaPdf($certificate);
+
+        return Storage::disk('public')->download(
+            $certificate->pdf_path,
+            "diploma-{$certificate->certificate_number}.pdf"
+        );
+    }
+
     public function myCertificates(): Response
     {
-        $certificates = $this->certificateService->getUserCertificates(auth()->id());
+        $userId = (int) auth()->id();
+
+        $this->certificateService->syncUserCertificates($userId);
+
+        $certificates = $this->certificateService
+            ->getUserCertificates($userId)
+            ->map(fn (Certificate $certificate) => [
+                'id'                 => $certificate->id,
+                'title'              => $certificate->title,
+                'description'        => $certificate->description,
+                'certificate_number' => $certificate->certificate_number,
+                'verification_code'  => $certificate->verification_code,
+                'issued_at'          => $certificate->issued_at?->toIso8601String(),
+                'expires_at'         => $certificate->expires_at?->toIso8601String(),
+                'score'              => $certificate->metadata['score'] ?? null,
+                'course'             => $certificate->course
+                    ? [
+                        'id'    => $certificate->course->id,
+                        'title' => $certificate->course->title,
+                    ]
+                    : null,
+                'download_url'     => route('certificates.download', $certificate),
+                'diploma_url'      => route('certificates.diploma', $certificate),
+                'verification_url' => route('certificates.verify', $certificate->verification_code),
+            ])
+            ->values();
 
         return Inertia::render('Learner/Certificates/MyCertificates', [
             'certificates' => $certificates,
@@ -147,17 +188,32 @@ class CertificateController extends Controller
     {
         $certificate = $this->certificateService->verifyCertificate($verificationCode);
 
-        if (!$certificate) {
-            return Inertia::render('Public/CertificateVerification', [
-                'found' => false,
-                'message' => 'Certificado no encontrado.',
+        if (! $certificate) {
+            return Inertia::render('Certificates/Verify', [
+                'certificate' => null,
+                'verified'    => false,
             ]);
         }
 
-        return Inertia::render('Public/CertificateVerification', [
-            'found' => true,
-            'certificate' => $certificate,
-            'isValid' => $certificate->isValid(),
+        return Inertia::render('Certificates/Verify', [
+            'verified'    => true,
+            'certificate' => [
+                'certificate_number' => $certificate->certificate_number,
+                'user'               => [
+                    'id'   => $certificate->user->id,
+                    'name' => $certificate->user->name,
+                ],
+                'course' => [
+                    'id'    => $certificate->course?->id,
+                    'title' => $certificate->course?->title ?? $certificate->title,
+                ],
+                'issued_at'         => $certificate->issued_at?->toIso8601String(),
+                'valid_until'       => $certificate->expires_at?->toIso8601String(),
+                'completion_date'   => $certificate->issued_at?->toIso8601String(),
+                'is_revoked'        => $certificate->isRevoked(),
+                'revoked_at'        => $certificate->revoked_at?->toIso8601String(),
+                'revocation_reason' => $certificate->revocation_reason,
+            ],
         ]);
     }
 }

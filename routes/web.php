@@ -229,12 +229,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ]);
 
             // Learner stats
+            $myTrainingSeconds = (int) \App\Modules\Learning\Domain\ModuleCompletion::query()
+                ->where('user_id', $user->id)
+                ->sum('time_spent_seconds');
+
             $stats = [
                 'my_courses' => $user->enrollments()->where('status', 'active')->count(),
                 'my_certificates' => \App\Modules\Certificate\Domain\Certificate::where('user_id', $user->id)->count(),
                 'pending_assessments' => 0, // TODO: calcular evaluaciones pendientes
                 'active_enrollments' => $user->enrollments()->where('status', 'active')->count(),
                 'completed_courses' => $user->enrollments()->where('status', 'completed')->count(),
+                'my_training_hours' => round($myTrainingSeconds / 3600, 1),
             ];
             $recentActivities = null;
 

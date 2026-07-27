@@ -25,7 +25,7 @@ class CourseController extends Controller
         private readonly AuditService $auditService
     ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $user = auth()->user();
         $roleName = strtolower($user->role?->name ?? '');
@@ -44,6 +44,9 @@ class CourseController extends Controller
             ]);
         }
 
+        $search = $request->string('search')->trim();
+        $category = $request->string('category')->trim();
+
         $courses = Course::with([
             'category',
             'enrollments' => fn ($query) => $query
@@ -53,6 +56,17 @@ class CourseController extends Controller
         ])
             ->withCount('enrollments')
             ->whereIn('status', ['active', 'published'])
+            ->when($search->isNotEmpty(), function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->when($category->isNotEmpty(), function ($query) use ($category) {
+                $query->whereHas('category', function ($q) use ($category) {
+                    $q->where('name', $category);
+                });
+            })
             ->latest()
             ->paginate(12)
             ->through(function (Course $course) {
@@ -91,8 +105,24 @@ class CourseController extends Controller
                 ];
             });
 
+        $categories = Category::withCount('courses')
+            ->whereHas('courses', function ($q) {
+                $q->whereIn('status', ['active', 'published']);
+            })
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($cat) => [
+                'name' => $cat->name,
+                'count' => $cat->courses_count,
+            ]);
+
         return Inertia::render('learning/courses/index', [
             'courses' => $courses,
+            'categories' => $categories,
+            'filters' => [
+                'search' => $search->toString(),
+                'category' => $category->toString(),
+            ],
         ]);
     }
 
@@ -177,9 +207,10 @@ class CourseController extends Controller
 
                 $missing = array_diff($prerequisiteIds, $completedPrerequisiteIds);
                 if (!empty($missing)) {
-                    return redirect()
-                        ->route('courses.index')
-                        ->with('error', 'Debes completar los prerequisitos antes de ingresar a este curso.');
+                    return Inertia::render('errors/403', [
+                        'status' => 403,
+                        'message' => 'Debes completar los prerequisitos antes de ingresar a este curso.',
+                    ]);
                 }
             }
 
@@ -549,7 +580,10 @@ class CourseController extends Controller
 
             $missing = array_diff($prerequisiteIds, $completedPrerequisiteIds);
             if (!empty($missing)) {
-                return back()->with('error', 'Debes completar los prerequisitos antes de autoinscribirte.');
+                return Inertia::render('errors/403', [
+                    'status' => 403,
+                    'message' => 'Debes completar los prerequisitos antes de autoinscribirte.',
+                ]);
             }
         }
 

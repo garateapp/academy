@@ -6,6 +6,7 @@ use App\Modules\Assessment\Domain\Assessment;
 use App\Modules\Assessment\Domain\AssessmentAttempt;
 use App\Modules\Assessment\Domain\AssessmentResponse;
 use App\Modules\Audit\Application\AuditService;
+use App\Modules\Learning\Domain\ModuleCompletion;
 use Illuminate\Support\Facades\DB;
 
 class AssessmentService
@@ -22,12 +23,12 @@ class AssessmentService
             ->max('attempt_number') + 1;
 
         $attempt = AssessmentAttempt::create([
-            'assessment_id' => $assessment->id,
-            'user_id' => $userId,
-            'enrollment_id' => $enrollmentId,
+            'assessment_id'  => $assessment->id,
+            'user_id'        => $userId,
+            'enrollment_id'  => $enrollmentId,
             'attempt_number' => $attemptNumber,
-            'status' => 'in_progress',
-            'started_at' => now(),
+            'status'         => 'in_progress',
+            'started_at'     => now(),
         ]);
 
         $this->auditService->log(
@@ -35,9 +36,9 @@ class AssessmentService
             entityType: 'assessment_attempt',
             entityId: (string) $attempt->id,
             payload: [
-                'assessment_id' => $assessment->id,
-                'attempt_id' => $attempt->id,
-                'user_id' => $userId,
+                'assessment_id'  => $assessment->id,
+                'attempt_id'     => $attempt->id,
+                'user_id'        => $userId,
                 'attempt_number' => $attemptNumber,
             ]
         );
@@ -49,12 +50,12 @@ class AssessmentService
     {
         $response = AssessmentResponse::updateOrCreate(
             [
-                'attempt_id' => $attempt->id,
+                'attempt_id'  => $attempt->id,
                 'question_id' => $questionId,
             ],
             [
                 'selected_option_id' => $data['selected_option_id'] ?? null,
-                'text_response' => $data['text_response'] ?? null,
+                'text_response'      => $data['text_response']      ?? null,
             ]
         );
 
@@ -69,7 +70,7 @@ class AssessmentService
         DB::transaction(function () use ($attempt) {
             // Mark as submitted
             $attempt->update([
-                'status' => 'submitted',
+                'status'       => 'submitted',
                 'submitted_at' => now(),
             ]);
 
@@ -79,7 +80,7 @@ class AssessmentService
             }
 
             // Check if manual grading is needed
-            if (!$attempt->requiresManualGrading()) {
+            if (! $attempt->requiresManualGrading()) {
                 $this->gradeAttempt($attempt);
             }
 
@@ -88,9 +89,9 @@ class AssessmentService
                 entityType: 'assessment_attempt',
                 entityId: (string) $attempt->id,
                 payload: [
-                    'assessment_id' => $attempt->assessment_id,
-                    'attempt_id' => $attempt->id,
-                    'user_id' => $attempt->user_id,
+                    'assessment_id'           => $attempt->assessment_id,
+                    'attempt_id'              => $attempt->id,
+                    'user_id'                 => $attempt->user_id,
                     'requires_manual_grading' => $attempt->requiresManualGrading(),
                 ]
             );
@@ -103,10 +104,12 @@ class AssessmentService
             $attempt->calculateScore();
 
             $attempt->update([
-                'status' => 'graded',
+                'status'    => 'graded',
                 'graded_at' => now(),
                 'graded_by' => $graderId,
             ]);
+
+            $this->completeAssessmentModuleIfPassed($attempt);
 
             $this->auditService->log(
                 action: 'assessment.attempt_graded',
@@ -114,11 +117,11 @@ class AssessmentService
                 entityId: (string) $attempt->id,
                 payload: [
                     'assessment_id' => $attempt->assessment_id,
-                    'attempt_id' => $attempt->id,
-                    'user_id' => $attempt->user_id,
-                    'score' => $attempt->score,
-                    'passed' => $attempt->passed,
-                    'graded_by' => $graderId,
+                    'attempt_id'    => $attempt->id,
+                    'user_id'       => $attempt->user_id,
+                    'score'         => $attempt->score,
+                    'passed'        => $attempt->passed,
+                    'graded_by'     => $graderId,
                 ]
             );
         });
@@ -127,16 +130,17 @@ class AssessmentService
     public function gradeResponse(AssessmentResponse $response, bool $isCorrect, int $pointsAwarded, ?string $feedback = null): void
     {
         $response->update([
-            'is_correct' => $isCorrect,
+            'is_correct'     => $isCorrect,
             'points_awarded' => $pointsAwarded,
-            'feedback' => $feedback,
+            'feedback'       => $feedback,
         ]);
 
         // Recalculate attempt score
         $attempt = $response->attempt;
+
         if ($attempt->status === 'submitted') {
             // Check if all responses are graded
-            if (!$attempt->requiresManualGrading()) {
+            if (! $attempt->requiresManualGrading()) {
                 $this->gradeAttempt($attempt);
             }
         }
@@ -149,40 +153,78 @@ class AssessmentService
         if ($attempts->isEmpty()) {
             return [
                 'total_attempts' => 0,
-                'average_score' => 0,
-                'pass_rate' => 0,
-                'highest_score' => 0,
-                'lowest_score' => 0,
+                'average_score'  => 0,
+                'pass_rate'      => 0,
+                'highest_score'  => 0,
+                'lowest_score'   => 0,
             ];
         }
 
         return [
             'total_attempts' => $attempts->count(),
-            'average_score' => round($attempts->avg('score'), 2),
-            'pass_rate' => round(($attempts->where('passed', true)->count() / $attempts->count()) * 100, 2),
-            'highest_score' => $attempts->max('score'),
-            'lowest_score' => $attempts->min('score'),
+            'average_score'  => round($attempts->avg('score'), 2),
+            'pass_rate'      => round(($attempts->where('passed', true)->count() / $attempts->count()) * 100, 2),
+            'highest_score'  => $attempts->max('score'),
+            'lowest_score'   => $attempts->min('score'),
         ];
     }
 
     public function getUserProgress(int $userId, int $assessmentId): array
     {
         $assessment = Assessment::findOrFail($assessmentId);
-        $attempts = $assessment->attempts()
+        $attempts   = $assessment->attempts()
             ->where('user_id', $userId)
             ->orderBy('attempt_number', 'desc')
             ->get();
 
-        $bestScore = $attempts->where('status', 'graded')->max('score');
+        $bestScore     = $attempts->where('status', 'graded')->max('score');
         $latestAttempt = $attempts->first();
 
         return [
-            'can_attempt' => $assessment->canUserAttempt($userId),
-            'attempts_used' => $attempts->whereIn('status', ['submitted', 'graded'])->count(),
-            'max_attempts' => $assessment->max_attempts,
-            'best_score' => $bestScore,
-            'passed' => $bestScore >= $assessment->passing_score,
+            'can_attempt'    => $assessment->canUserAttempt($userId),
+            'attempts_used'  => $attempts->whereIn('status', ['submitted', 'graded'])->count(),
+            'max_attempts'   => $assessment->max_attempts,
+            'best_score'     => $bestScore,
+            'passed'         => $bestScore >= $assessment->passing_score,
             'latest_attempt' => $latestAttempt,
         ];
+    }
+
+    private function completeAssessmentModuleIfPassed(AssessmentAttempt $attempt): void
+    {
+        if (! $attempt->passed || ! $attempt->enrollment_id) {
+            return;
+        }
+
+        $attempt->loadMissing(['assessment.module', 'enrollment']);
+        $module     = $attempt->assessment?->module;
+        $enrollment = $attempt->enrollment;
+
+        if (! $module || ! $enrollment) {
+            return;
+        }
+
+        $elapsedSeconds = $attempt->submitted_at && $attempt->started_at
+            ? (int) $attempt->started_at->diffInSeconds($attempt->submitted_at)
+            : 0;
+
+        if ($elapsedSeconds === 0) {
+            $elapsedSeconds = ($module->duration_minutes ?? 1) * 60;
+        }
+
+        ModuleCompletion::firstOrCreate(
+            [
+                'user_id'       => $attempt->user_id,
+                'enrollment_id' => $attempt->enrollment_id,
+                'module_id'     => $module->id,
+            ],
+            [
+                'completed_at'       => now(),
+                'time_spent_seconds' => $elapsedSeconds,
+                'score'              => $attempt->score,
+            ]
+        );
+
+        $enrollment->autoCompleteIfReady();
     }
 }

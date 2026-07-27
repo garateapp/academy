@@ -24,6 +24,7 @@ interface Stats {
   my_certificates?: number;
   pending_assessments?: number;
   completed_courses?: number;
+  my_training_hours?: number;
 }
 
 interface RecentActivity {
@@ -144,6 +145,11 @@ export default function Dashboard({
                 <div className="stat-title">Certificados</div>
                 <div className="stat-value text-success">{stats.my_certificates || 0}</div>
                 <div className="stat-desc">Logros obtenidos</div>
+              </div>
+              <div className="stat bg-base-100 shadow rounded-xl">
+                <div className="stat-title">Horas de capacitacion</div>
+                <div className="stat-value text-info">{stats.my_training_hours || 0}h</div>
+                <div className="stat-desc">Tiempo invertido en cursos</div>
               </div>
             </div>
           </div>

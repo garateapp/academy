@@ -16,6 +16,8 @@ Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(funct
         ->name('certificates.regenerate');
     Route::get('certificates/{certificate}/download', [CertificateController::class, 'download'])
         ->name('certificates.download');
+    Route::get('certificates/{certificate}/diploma', [CertificateController::class, 'diploma'])
+        ->name('certificates.diploma');
 
     // Certificate Templates CRUD
     Route::resource('certificate-templates', CertificateTemplateController::class);
@@ -32,6 +34,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     // Download own certificate
     Route::get('certificates/{certificate}/download', [CertificateController::class, 'download'])
         ->name('certificates.download');
+
+    // Download own diploma
+    Route::get('certificates/{certificate}/diploma', [CertificateController::class, 'diploma'])
+        ->name('certificates.diploma');
 });
 
 // Public routes

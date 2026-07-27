@@ -115,6 +115,8 @@ class ModuleProgressController extends Controller
                     'time_spent_seconds' => $progress->total_watched_seconds,
                 ]);
             }
+
+            $enrollment->autoCompleteIfReady();
         }
 
         return response()->json([

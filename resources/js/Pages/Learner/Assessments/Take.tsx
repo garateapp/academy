@@ -211,18 +211,18 @@ export default function Take({
         {requiresDisclaimer && (
           <div className="card bg-base-100 shadow-xl mb-6">
             <div className="card-body space-y-4">
-              <h2 className="card-title">Declaracion de asistencia</h2>
+              <h2 className="card-title">Declaración de asistencia</h2>
               <div className="text-sm text-base-content/70 space-y-3">
                 <p>
                   Declaro bajo mi responsabilidad que he asistido al curso y que he revisado el
-                  contenido completo correspondiente a esta evaluacion obligatoria. Reconozco que
-                  la toma de esta evaluacion constituye evidencia formal de mi participacion y
-                  asistencia al curso, y que la informacion proporcionada es veraz.
+                  contenido completo correspondiente a esta evaluación obligatoria. Reconozco que
+                  la toma de esta evaluación constituye evidencia formal de mi participación y
+                  asistencia al curso, y que la información proporcionada es veraz.
                 </p>
                 <p>
-                  Acepto que mi identificacion (RUT) sera registrada como respaldo de asistencia y
-                  que cualquier declaracion falsa puede derivar en la anulacion de la evaluacion y
-                  otras medidas administrativas conforme a la normativa interna de la organizacion.
+                  Acepto que mi identificación (RUT) será registrada como respaldo de asistencia y
+                  que cualquier declaración falsa puede derivar en la anulación de la evaluación y
+                  otras medidas administrativas conforme a la normativa interna de la organización.
                 </p>
               </div>
               <form onSubmit={handleAttendanceSubmit} className="space-y-4">

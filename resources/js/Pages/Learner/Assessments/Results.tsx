@@ -1,6 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { ArrowRight, Download } from 'lucide-react';
 
 interface Question {
   id: number;
@@ -38,6 +39,7 @@ interface Attempt {
   id: number;
   status: string;
   score: number;
+  passed: boolean | null;
   started_at: string;
   submitted_at: string;
   responses: Response[];
@@ -48,14 +50,23 @@ interface Module {
   title: string;
 }
 
+interface NextModule extends Module {
+  type: string;
+  url: string;
+}
+
 export default function Results({
   assessment,
   attempt,
   module,
+  nextModule,
+  diplomaUrl,
 }: {
   assessment: Assessment;
   attempt: Attempt;
   module?: Module | null;
+  nextModule?: NextModule | null;
+  diplomaUrl?: string | null;
 }) {
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -71,7 +82,7 @@ export default function Results({
     (sum, response) => sum + response.points_earned,
     0,
   );
-  const isPassing = attempt.score >= assessment.passing_score;
+  const isPassing = attempt.passed ?? attempt.score >= assessment.passing_score;
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -122,6 +133,36 @@ export default function Results({
           </div>
         </div>
 
+        {isPassing && diplomaUrl && (
+          <div className="mb-6 flex flex-col gap-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-serif text-2xl text-emerald-950">Tu diploma está listo</h2>
+              <p className="mt-1 text-sm text-emerald-700">
+                Aprobaste la evaluación y completaste satisfactoriamente el curso.
+              </p>
+            </div>
+            <a href={diplomaUrl} className="btn btn-primary shrink-0">
+              <Download className="size-4" />
+              Descargar diploma
+            </a>
+          </div>
+        )}
+
+        {isPassing && !diplomaUrl && nextModule && (
+          <div className="mb-6 flex flex-col gap-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-semibold text-emerald-950">Evaluación aprobada</h2>
+              <p className="mt-1 text-sm text-emerald-700">
+                Continúa con: {nextModule.title}
+              </p>
+            </div>
+            <Link href={nextModule.url} className="btn btn-primary shrink-0">
+              Ir al siguiente módulo
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="stat bg-base-100 shadow rounded-box">
             <div className="stat-title">Puntaje</div>
@@ -159,7 +200,7 @@ export default function Results({
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Revisión de Respuestas</h2>
 
-            {attempt.responses.map((response, index) => (
+            {attempt.responses.map((response) => (
               <div key={response.id} className="card bg-base-100 shadow-xl">
                 <div className="card-body">
                   <div className="flex justify-between items-start">
@@ -246,10 +287,15 @@ export default function Results({
           </div>
         )}
 
-        <div className="flex justify-center mt-8">
-          {module?.id ? (
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          {nextModule ? (
+            <Link href={nextModule.url} className="btn btn-primary">
+              Ir al siguiente módulo
+              <ArrowRight className="size-4" />
+            </Link>
+          ) : module?.id ? (
             <Link href={`/modules/${module.id}`} className="btn btn-primary">
-              Continuar con el Módulo
+              Volver al módulo
             </Link>
           ) : (
             <Link href="/courses" className="btn btn-primary">

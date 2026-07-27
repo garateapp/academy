@@ -352,7 +352,7 @@ export default function Edit({
             : ['link', 'scorm'].includes(type)
               ? 'url'
               : null,
-      duration_minutes: null,
+      duration_minutes: 1,
       is_required: true,
       sort_order: maxOrder + 1,
       config_json:
@@ -895,18 +895,19 @@ export default function Edit({
 
                       <div className="form-control w-full">
                         <label className="label">
-                          <span className="label-text">Duración (minutos)</span>
+                          <span className="label-text">Duración (minutos) *</span>
                         </label>
                         <input
                           type="number"
                           className="input input-bordered w-full"
                           value={selectedModule.duration_minutes || ''}
-                          min={0}
+                          min={1}
+                          required
                           onChange={(e) =>
                             updateModuleField(
                               selectedModule.id,
                               'duration_minutes',
-                              e.target.value ? Number(e.target.value) : null,
+                              e.target.value ? Number(e.target.value) : 1,
                             )
                           }
                         />

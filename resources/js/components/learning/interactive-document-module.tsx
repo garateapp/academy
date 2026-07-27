@@ -685,7 +685,7 @@ function FieldControl({
 }) {
     const sharedClass = standalone
         ? 'w-full'
-        : 'mx-1 inline-flex min-w-[220px] max-w-full align-middle';
+        : 'mx-1 inline-flex min-w-[180px] max-w-full align-middle';
     const value = responses[field.key];
     const error = errors[field.key];
     const selectedOption = findInteractiveDocumentOptionByValue(field, value);
@@ -731,6 +731,7 @@ function FieldControl({
                         disabled={disabled}
                         placeholder={field.placeholder}
                         value={typeof value === 'string' ? value : ''}
+                        aria-required={field.required || undefined}
                         onChange={(event) => updateValue(event.target.value)}
                     ></textarea>
                 )}
@@ -742,6 +743,7 @@ function FieldControl({
                         disabled={disabled}
                         placeholder={field.placeholder}
                         value={typeof value === 'string' ? value : ''}
+                        aria-required={field.required || undefined}
                         onChange={(event) => updateValue(event.target.value)}
                     />
                 )}
@@ -752,9 +754,12 @@ function FieldControl({
                             className="select select-bordered w-full rounded-2xl border-stone-300 bg-stone-50 text-sm"
                             disabled={disabled}
                             value={typeof value === 'string' ? value : ''}
+                            aria-required={field.required || undefined}
                             onChange={(event) => updateValue(event.target.value)}
                         >
-                            <option value="">Selecciona</option>
+                            <option value="" disabled>
+                                Selecciona
+                            </option>
                             {field.options.map((option) => (
                                 <option key={option.id} value={option.value}>
                                     {option.label}
@@ -773,30 +778,28 @@ function FieldControl({
                 )}
 
                 {field.type === 'radio' && (
-                    <span className="space-y-3">
-                        <span className="rounded-2xl">
-                            <span className="grid gap-3 md:grid-cols-2">
-                                {field.options.map((option) => (
-                                    <label
-                                        key={option.id}
-                                        className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
-                                            value === option.value
-                                                ? 'border-emerald-300 bg-white shadow-sm'
-                                                : 'border-stone-200 bg-white/70'
-                                        } ${disabled ? 'cursor-not-allowed opacity-70' : 'hover:border-stone-300'}`}
-                                    >
-                                        <input
-                                            type="radio"
-                                            className="radio radio-primary radio-sm"
-                                            disabled={disabled}
-                                            checked={value === option.value}
-                                            onChange={() => updateValue(option.value)}
-                                        />
-                                        <span className="pt-0.5 font-medium text-stone-700">{option.label}</span>
-                                    </label>
-                                ))}
-                            </span>
-                        </span>
+                    <div className="space-y-3">
+                        <div className="grid gap-3 md:grid-cols-2">
+                            {field.options.map((option) => (
+                                <label
+                                    key={option.id}
+                                    className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
+                                        value === option.value
+                                            ? 'border-emerald-400 bg-emerald-50 shadow-sm ring-1 ring-emerald-200'
+                                            : 'border-stone-200 bg-white/70'
+                                    } ${disabled ? 'cursor-not-allowed opacity-70' : 'hover:border-stone-300'}`}
+                                >
+                                    <input
+                                        type="radio"
+                                        className="radio radio-primary radio-sm"
+                                        disabled={disabled}
+                                        checked={value === option.value}
+                                        onChange={() => updateValue(option.value)}
+                                    />
+                                    <span className="pt-0.5 font-medium text-stone-700">{option.label}</span>
+                                </label>
+                            ))}
+                        </div>
                         <ConditionalDetailField
                             field={field}
                             option={selectedOption}
@@ -805,20 +808,25 @@ function FieldControl({
                             disabled={disabled}
                             onChange={updateDetail}
                         />
-                    </span>
+                    </div>
                 )}
 
                 {field.type === 'checkbox' && (
-                    <label className="inline-flex items-start gap-3 rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-sm text-stone-700">
+                    <label
+                        htmlFor={`field-${field.id}`}
+                        className="inline-flex items-start gap-3 rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-sm text-stone-700"
+                    >
                         <input
+                            id={`field-${field.id}`}
                             type="checkbox"
                             className="checkbox checkbox-primary checkbox-sm mt-0.5"
                             disabled={disabled}
                             checked={Boolean(value)}
+                            aria-required={field.required || undefined}
                             onChange={(event) => updateValue(event.target.checked)}
                         />
                         <span>
-                            {field.placeholder || field.label}
+                            {field.label}
                             {field.required ? ' *' : ''}
                         </span>
                     </label>

@@ -1,15 +1,15 @@
 <?php
 
+use App\Modules\Learning\Http\Controllers\AttendanceSessionController;
 use App\Modules\Learning\Http\Controllers\CategoryController;
 use App\Modules\Learning\Http\Controllers\CourseController;
 use App\Modules\Learning\Http\Controllers\CourseModuleController;
-use App\Modules\Learning\Http\Controllers\LearningPathController;
-use App\Modules\Learning\Http\Controllers\LearningHistoryController;
-use App\Modules\Learning\Http\Controllers\ModuleProgressController;
-use App\Modules\Learning\Http\Controllers\ModuleCompletionController;
-use App\Modules\Learning\Http\Controllers\ModuleViewController;
 use App\Modules\Learning\Http\Controllers\InteractiveDocumentController;
-use App\Modules\Learning\Http\Controllers\AttendanceSessionController;
+use App\Modules\Learning\Http\Controllers\LearningHistoryController;
+use App\Modules\Learning\Http\Controllers\LearningPathController;
+use App\Modules\Learning\Http\Controllers\ModuleCompletionController;
+use App\Modules\Learning\Http\Controllers\ModuleProgressController;
+use App\Modules\Learning\Http\Controllers\ModuleViewController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth'])->group(function () {
@@ -64,6 +64,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 // Admin routes
 Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('attendance-sessions', [AttendanceSessionController::class, 'index'])
+        ->name('attendance-sessions.index');
+
     // Categories Management
     Route::resource('categories', CategoryController::class);
     Route::post('categories/reorder', [CategoryController::class, 'reorder'])

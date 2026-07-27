@@ -48,6 +48,10 @@ class ModuleCompletionController extends Controller
             abort(403);
         }
 
+        $data = $request->validate([
+            'time_spent_seconds' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
         $completion = ModuleCompletion::firstOrCreate(
             [
                 'user_id' => $user->id,
@@ -56,7 +60,7 @@ class ModuleCompletionController extends Controller
             ],
             [
                 'completed_at' => now(),
-                'time_spent_seconds' => 0,
+                'time_spent_seconds' => $data['time_spent_seconds'] ?? ($module->duration_minutes ?? 0) * 60,
                 'score' => null,
             ]
         );
@@ -70,6 +74,8 @@ class ModuleCompletionController extends Controller
                 metadata: null
             );
         }
+
+        $enrollment->autoCompleteIfReady();
 
         return response()->json([
             'completed' => true,

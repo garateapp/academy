@@ -128,7 +128,7 @@ class CourseModuleController extends Controller
             'asset_path' => ['nullable', 'string', 'max:2048'],
             'asset_type' => ['nullable', 'string', 'max:100'],
             'asset_file' => ['nullable', 'file', 'max:51200'],
-            'duration_minutes' => ['nullable', 'integer', 'min:1'],
+            'duration_minutes' => [$required, 'integer', 'min:1'],
             'is_required' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'config_json' => ['nullable', 'array'],
