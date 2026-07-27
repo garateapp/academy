@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler, useState, useEffect } from 'react';
+import { Head, useForm } from '@inertiajs/react';
+import { FormEventHandler, useState, useEffect, useCallback } from 'react';
 
 interface Question {
   id: number;
@@ -75,26 +75,7 @@ export default function Take({
     responses: {},
   });
 
-  useEffect(() => {
-    if (assessment.time_limit_minutes) {
-      const startTime = new Date(attempt.started_at).getTime();
-      const endTime = startTime + assessment.time_limit_minutes * 60 * 1000;
-
-      const interval = setInterval(() => {
-        const now = Date.now();
-        const remaining = Math.max(0, endTime - now);
-        setTimeRemaining(Math.floor(remaining / 1000));
-
-        if (remaining === 0) {
-          handleSubmit();
-        }
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [assessment.time_limit_minutes, attempt.started_at]);
-
-  const handleSubmit: FormEventHandler = async (e) => {
+  const handleSubmit: FormEventHandler = useCallback(async (e) => {
     if (e) e.preventDefault();
     if (submitting) return;
     if (confirm('¿Estás seguro de enviar tu evaluación? Esta acción no se puede deshacer.')) {
@@ -133,7 +114,26 @@ export default function Take({
         onFinish: () => setSubmitting(false),
       });
     }
-  };
+  }, [submitting, data.responses, questions, assessment.id, attempt.id, post]);
+
+  useEffect(() => {
+    if (assessment.time_limit_minutes) {
+      const startTime = new Date(attempt.started_at).getTime();
+      const endTime = startTime + assessment.time_limit_minutes * 60 * 1000;
+
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const remaining = Math.max(0, endTime - now);
+        setTimeRemaining(Math.floor(remaining / 1000));
+
+        if (remaining === 0) {
+          handleSubmit();
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [assessment.time_limit_minutes, attempt.started_at, handleSubmit]);
 
   const handleAnswer = (questionId: number, answer: string) => {
     setData('responses', {
