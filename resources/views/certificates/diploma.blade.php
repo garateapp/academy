@@ -208,28 +208,7 @@
             display: inline-block;
             width: 28mm;
             height: 28mm;
-            border: 2px solid #B8860B;
-            border-radius: 50%;
-            padding: 1.5mm;
-        }
-
-        .seal-inner {
-            display: table;
-            width: 23mm;
-            height: 23mm;
-            border: 1px solid #B8860B;
-            border-radius: 50%;
-        }
-
-        .seal-text {
-            display: table-cell;
-            vertical-align: middle;
-            font-size: 7pt;
-            text-align: center;
-            color: #B8860B;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            line-height: 1.4;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -277,11 +256,9 @@
             </div>
 
             <div class="footer-col footer-seal">
-                <div class="seal">
-                    <div class="seal-inner">
-                        <div class="seal-text">Gárate<br>Academy</div>
-                    </div>
-                </div>
+                @if($sealDataUri)
+                <img class="seal" src="{{ $sealDataUri }}" alt="Sello Gárate Academy">
+                @endif
             </div>
 
             <div class="footer-col footer-number">

@@ -199,6 +199,10 @@ class CertificateService
         $logoDataUri = is_file($logoPath)
             ? 'data:image/png;base64,' . base64_encode((string) file_get_contents($logoPath))
             : null;
+        $sealPath    = public_path('sello-garate-academy.png');
+        $sealDataUri = is_file($sealPath)
+            ? 'data:image/png;base64,' . base64_encode((string) file_get_contents($sealPath))
+            : null;
 
         $html = view('certificates.diploma', [
             'certificate'       => $certificate,
@@ -209,6 +213,7 @@ class CertificateService
             'issuedDate'        => $certificate->issued_at->format('d/m/Y'),
             'organization'      => config('app.name', 'Greenex Academy'),
             'logoDataUri'       => $logoDataUri,
+            'sealDataUri'       => $sealDataUri,
         ])->render();
 
         $pdf = Pdf::loadHTML($html)->setPaper('a4', 'landscape');
