@@ -228,8 +228,25 @@ function StatusBadge({ status }: { status: string }) {
         : status === 'active' || status === 'in_progress'
             ? 'badge-warning'
             : 'badge-outline';
+        let statusText = status.replaceAll('_', ' ');
+        switch (status) {
+        case 'completed':
+            statusText = 'Completado';
+            break;
+        case 'submitted':
+            statusText = 'Enviado';
 
-    return <span className={`badge ${className}`}>{status.replaceAll('_', ' ')}</span>;
+            break;
+        case 'active':
+            statusText = 'Activo';
+            break;
+        case 'in_progress':
+            statusText = 'En progreso';
+            break;
+        default:
+            statusText = "No Iniciado";
+    }
+    return <span className={`badge ${className}`}>{statusText}</span>;
 }
 
 function formatDate(value: string) {

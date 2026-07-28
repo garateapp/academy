@@ -207,7 +207,7 @@ export default function Take({
         </div>
       </div>
 
-      <div className="container mx-auto p-6 max-w-4xl">
+      <div className="container mx-auto p-6">
         {requiresDisclaimer && (
           <div className="card bg-base-100 shadow-xl mb-6">
             <div className="card-body space-y-4">
