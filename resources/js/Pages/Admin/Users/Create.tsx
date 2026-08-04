@@ -77,7 +77,7 @@ export default function Create({ roles }: { roles: Role[] }) {
                 </label>
                 <input
                   type="email"
-                  placeholder="usuario@greenex.com"
+                  placeholder="usuario@Gárate Hermanos.com"
                   className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
                   value={data.email}
                   onChange={(e) => setData('email', e.target.value)}

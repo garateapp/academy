@@ -36,7 +36,7 @@ export default function Verify({
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">Greenex Academy</h1>
+          <h1 className="text-4xl font-bold mb-2">Gárate Hermanos Academy</h1>
           <p className="text-lg text-base-content/70">Verificación de Certificado</p>
         </div>
 
@@ -163,7 +163,7 @@ export default function Verify({
 
               <div className="text-center text-sm text-base-content/60">
                 <p>
-                  Este certificado fue emitido por Greenex Academy y puede ser verificado en
+                  Este certificado fue emitido por Gárate Hermanos Academy y puede ser verificado en
                   cualquier momento usando el código de verificación único.
                 </p>
               </div>

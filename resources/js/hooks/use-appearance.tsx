@@ -23,7 +23,7 @@ const applyTheme = (appearance: Appearance): void => {
 
     document.documentElement.classList.remove('dark');
     document.documentElement.style.colorScheme = 'light';
-    document.documentElement.setAttribute('data-theme', 'greenex');
+    document.documentElement.setAttribute('data-theme', 'Gárate Hermanos');
 };
 
 const subscribe = (callback: () => void) => {

@@ -20,15 +20,7 @@ interface User {
   enrollments_count: number;
 }
 
-interface PaginatedUsers {
-  data: User[];
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-}
-
-export default function Index({ users }: { users: PaginatedUsers }) {
+export default function Index({ users }: { users: User[] }) {
   const handleDelete = (user: User) => {
     if (
       confirm(
@@ -133,7 +125,7 @@ export default function Index({ users }: { users: PaginatedUsers }) {
         <div className="card-body p-0">
           <DataTable
             columns={columns}
-            data={users.data}
+            data={users}
             actions={(row) => (
               <div className="flex gap-2 justify-end">
                 <Link
@@ -232,22 +224,6 @@ export default function Index({ users }: { users: PaginatedUsers }) {
         </div>
       </div>
 
-      {/* Pagination */}
-      {users.last_page > 1 && (
-        <div className="flex justify-center mt-6">
-          <div className="join">
-            {Array.from({ length: users.last_page }, (_, i) => i + 1).map((page) => (
-              <Link
-                key={page}
-                href={`/admin/users?page=${page}`}
-                className={`join-item btn ${page === users.current_page ? 'btn-active' : ''}`}
-              >
-                {page}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </AdminLayout>
   );
 }

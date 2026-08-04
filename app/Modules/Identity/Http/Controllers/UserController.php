@@ -35,7 +35,7 @@ class UserController extends Controller
                 $query->where('status', 'active');
             }])
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->get();
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,

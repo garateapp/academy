@@ -37,7 +37,7 @@ Route::get('/', function () {
                 'duration_minutes' => $course->duration_minutes,
                 'cover_image' => $course->cover_image,
                 'enrollments_count' => (int) $course->enrollments_count,
-                'creator_name' => $course->creator?->name ?? 'Equipo Greenex',
+                'creator_name' => $course->creator?->name ?? 'Equipo Gárate Hermanos',
                 'category_name' => $course->category?->name,
                 'tag' => $tags[$index] ?? 'Destacado',
             ];

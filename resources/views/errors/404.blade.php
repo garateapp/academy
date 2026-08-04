@@ -66,7 +66,7 @@
 <body>
     <div class="wrapper">
         <div class="card">
-            <img class="logo" src="{{ asset('greencito-academy.png') }}" alt="Greenex Academy">
+            <img class="logo" src="{{ asset('greencito-academy.png') }}" alt="Gárate Hermanos Academy">
             <h1>Pagina no encontrada (404)</h1>
             <p>La pagina que buscas no existe o fue movida.</p>
             <div class="actions">

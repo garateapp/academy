@@ -66,7 +66,7 @@
 <body>
     <div class="wrapper">
         <div class="card">
-            <img class="logo" src="{{ asset('greencito-academy.png') }}" alt="Greenex Academy">
+            <img class="logo" src="{{ asset('greencito-academy.png') }}" alt="Gárate Hermanos Academy">
             <h1>Acceso denegado (403)</h1>
             <p>No tienes permiso para ver esta pagina. Si crees que es un error, contacta al administrador.</p>
             <div class="actions">

@@ -10,7 +10,7 @@ class CreateOrUpdateUserFromGoogle
     public function handle(SocialiteUser $socialUser): User
     {
         // Here you can add domain validation if needed
-        // if (!str_ends_with($socialUser->getEmail(), '@greenex.cl')) {
+        // if (!str_ends_with($socialUser->getEmail(), '@Gárate Hermanos.cl')) {
         //     abort(403, 'Unauthorized domain.');
         // }
 

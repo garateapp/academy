@@ -211,7 +211,7 @@ class CertificateService
             'score'             => $certificate->metadata['score'] ?? null,
             'certificateNumber' => $certificate->certificate_number,
             'issuedDate'        => $certificate->issued_at->format('d/m/Y'),
-            'organization'      => config('app.name', 'Greenex Academy'),
+            'organization'      => config('app.name', 'Gárate Hermanos Academy'),
             'logoDataUri'       => $logoDataUri,
             'sealDataUri'       => $sealDataUri,
         ])->render();

@@ -13,7 +13,7 @@ export default function Error403() {
         <img
           className="mx-auto mb-6 block h-auto w-[180px]"
           src="/greencito-academy.png"
-          alt="Greenex Academy"
+          alt="Gárate Hermanos Academy"
         />
         <h1 className="mb-3 text-[32px] font-bold text-slate-800">
           Acceso denegado ({status})

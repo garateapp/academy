@@ -143,7 +143,7 @@ class Certificate extends Model
             'certificate_number' => $this->certificate_number,
             'completion_date' => $this->issued_at->format('d/m/Y'),
             'verification_code' => $this->verification_code,
-            'organization' => config('app.name', 'Greenex Academy'),
+            'organization' => config('app.name', 'Gárate Hermanos Academy'),
         ];
 
         if ($this->course) {

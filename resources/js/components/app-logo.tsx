@@ -4,7 +4,7 @@ export default function AppLogo() {
             <div className="flex items-center">
                 <img
                     src="/logo-academy.png"
-                    alt="Greenex Academy"
+                    alt="Gárate Hermanos Academy"
                     className="h-20 w-auto mr-4"
                              />
 

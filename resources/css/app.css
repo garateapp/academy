@@ -2,7 +2,7 @@
 @plugin "daisyui";
 
 @plugin "daisyui/theme" {
-  name: "greenex";
+  name: "Gárate Hermanos";
   default: true;
   prefersdark: false;
   color-scheme: "light";

@@ -101,7 +101,7 @@ export default function Dashboard({
         <div className="bg-base-100 shadow rounded-lg p-6">
           <h1 className="text-3xl font-bold">Bienvenido, {auth.user.name}!</h1>
           <p className="text-base-content/70 mt-2">
-            Tu panel de aprendizaje en Greenex Academy.
+            Tu panel de aprendizaje en Gárate Hermanos Academy.
           </p>
         </div>
       );
@@ -399,7 +399,7 @@ export default function Dashboard({
           <div className="bg-base-100 shadow rounded-lg p-6">
             <h1 className="text-3xl font-bold">Bienvenido, {auth.user.name}!</h1>
             <p className="text-base-content/70 mt-2">
-              Panel de administracion de Greenex Academy
+              Panel de administracion de Gárate Hermanos Academy
             </p>
           </div>
 

@@ -6,7 +6,7 @@ export default function AppLogoIcon(props: ImgHTMLAttributes<HTMLImageElement>) 
     return (
         <img
             src="/logo-academy.png"
-            alt="Greenex Academy"
+            alt="Gárate Hermanos Academy"
             className={`object-contain ${className ?? ''}`}
             {...rest}
         />

@@ -15,7 +15,7 @@
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td>
-                                        <img src="{{ asset('logo-academy.png') }}" alt="Greenex Academy" style="height:48px;display:block;">
+                                        <img src="{{ asset('logo-academy.png') }}" alt="Gárate Hermanos Academy" style="height:48px;display:block;">
                                     </td>
                                     <td align="right">
                                         <span style="font-size:16px;font-weight:600;">Encuesta de mercado</span>
@@ -28,7 +28,7 @@
                         <td style="padding:32px;">
                             <h1 style="margin:0 0 12px;font-size:24px;color:#0f172a;">Te invitamos a participar</h1>
                             <p style="margin:0 0 16px;color:#475569;line-height:1.6;">
-                                Hola, tienes una nueva encuesta asignada en Greenex Academy. Tu opinion nos ayuda a mejorar la experiencia.
+                                Hola, tienes una nueva encuesta asignada en Gárate Hermanos Academy. Tu opinion nos ayuda a mejorar la experiencia.
                             </p>
                             <div style="background-color:#f1f5f9;border-radius:12px;padding:16px;margin-bottom:20px;">
                                 <p style="margin:0 0 6px;font-weight:600;">{{ $survey->title }}</p>
@@ -67,7 +67,7 @@
                                                     <img src="{{ asset('greeny-encuestador.png') }}" alt="Greeny encuestador" style="width:64px;height:64px;display:block;">
                                                 </td>
                                                 <td style="padding-left:16px;">
-                                                    <p style="margin:0;font-weight:600;color:#0f172a;">Greeny esta listo para escucharte</p>
+                                                    <p style="margin:0;font-weight:600;color:#0f172a;">Gari y Té están listos para escucharte</p>
                                                     <p style="margin:4px 0 0;color:#64748b;font-size:14px;">
                                                         Gracias por tu tiempo. Tu respuesta es valiosa para nuestro equipo.
                                                     </p>
@@ -81,7 +81,7 @@
                     </tr>
                     <tr>
                         <td style="padding:20px 32px;background-color:#0f172a;color:#e2e8f0;font-size:12px;">
-                            Greenex Academy  Este correo fue enviado automaticamente, por favor no responder.
+                            Gárate Hermanos Academy  Este correo fue enviado automaticamente, por favor no responder.
                         </td>
                     </tr>
                 </table>
