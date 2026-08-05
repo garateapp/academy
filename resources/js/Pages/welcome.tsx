@@ -86,7 +86,7 @@ export default function Welcome({
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      <Head title="Greenex Academy">
+      <Head title="Gárate Academy">
         <link rel="preconnect" href="https://fonts.bunny.net" />
         <link
           href="https://fonts.bunny.net/css?family=sora:400,500,600,700,800"
@@ -102,7 +102,7 @@ export default function Welcome({
         <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-38 h-auto bg-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
-              <img src="/logo-academy.png" alt="Greenex Academy"  />
+              <img src="/logo-academy.png" alt="Gárate Academy"  />
             </div>
             <span
               className={`text-xl font-bold tracking-tight ${
@@ -205,7 +205,7 @@ export default function Welcome({
               <span>Plataforma #1 en capacitacion sostenible</span>
             </div>
             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-slate-800">
-              Crece profesionalmente con <span className="text-emerald-600">Greeny</span>
+              Crece profesionalmente con <span className="text-emerald-600">Gárate Academy</span>
             </h1>
             <p className="text-xl text-slate-600 max-w-xl mx-auto lg:mx-0">
               Desarrolla las habilidades del futuro con nuestra metodologia interactiva diseñada
@@ -225,8 +225,8 @@ export default function Welcome({
               <div className="w-full max-w-md mx-auto aspect-square bg-emerald-200/30 rounded-full flex items-center justify-center relative border-8 border-white shadow-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-transparent" />
                 <img
-                  src="/greeny_diplomado.png"
-                  alt="Greeny"
+                  src="/birrete.png"
+                  alt="Gárate Academy"
                   className="w-4/5 h-4/5 object-contain"
                 />
               </div>
@@ -387,8 +387,8 @@ export default function Welcome({
               <div className="lg:w-1/3 flex justify-center">
                 <div className="w-48 h-48 md:w-64 md:h-64 bg-white/10 rounded-full border-4 border-emerald-400/30 flex items-center justify-center backdrop-blur-sm animate-float">
                   <img
-                    src="/greencito_academy.png"
-                    alt="Greencito"
+                    src="/birrete.png"
+                    alt=""
                     className="w-3/4 h-3/4 object-contain"
                   />
                 </div>
@@ -398,17 +398,10 @@ export default function Welcome({
                   Estas listo para empezar tu ruta de aprendizaje?
                 </h2>
                 <p className="text-emerald-100 text-xl max-w-2xl">
-                  Unete a miles de profesionales que ya estan transformando sus carreras. Greeny
-                  te acompanara en cada paso hacia el exito.
+                  Unete a nuestros profesionales que ya estan transformando sus carreras.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
-                  <button className="bg-orange-500 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-orange-600 transition-all shadow-xl shadow-orange-900/20">
-                    Registrarme Gratis
-                  </button>
-                  <button className="bg-emerald-800 text-emerald-100 px-10 py-5 rounded-2xl font-bold text-xl hover:bg-emerald-700 transition-all border border-emerald-700">
-                    Saber mas
-                  </button>
-                </div>
+                                </div>
               </div>
             </div>
           </div>
@@ -424,7 +417,7 @@ export default function Welcome({
                   G
                 </div>
                 <span className="text-xl font-bold text-white tracking-tight">
-                  Greenex <span className="text-orange-500">Academy</span>
+                  Gárate <span className="text-orange-500">Academy</span>
                 </span>
               </div>
               <p className="text-slate-400">
@@ -514,7 +507,7 @@ export default function Welcome({
           </div>
 
           <div className="border-t border-slate-800 pt-8 flex flex-col md:row justify-between items-center gap-4 text-sm text-slate-500">
-            <p>© 2024 Greenex Academy. Todos los derechos reservados.</p>
+            <p>© 2024 Gárate Academy. Todos los derechos reservados.</p>
             <div className="flex gap-8">
               <a href="#" className="hover:text-slate-300">
                 Terminos
