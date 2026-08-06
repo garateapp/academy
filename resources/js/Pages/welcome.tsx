@@ -488,22 +488,7 @@ export default function Welcome({
               </ul>
             </div>
 
-            <div>
-              <h4 className="text-white font-bold mb-6">Novedades</h4>
-              <p className="text-slate-400 mb-4">
-                Suscribete para recibir noticias de Greeny.
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Tu email"
-                  className="bg-slate-800 border-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 w-full"
-                />
-                <button className="bg-emerald-600 text-white p-2 rounded-lg hover:bg-emerald-700 transition-all">
-                  <ChevronRight />
-                </button>
-              </div>
-            </div>
+            
           </div>
 
           <div className="border-t border-slate-800 pt-8 flex flex-col md:row justify-between items-center gap-4 text-sm text-slate-500">
