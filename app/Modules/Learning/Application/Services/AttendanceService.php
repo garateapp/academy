@@ -76,7 +76,7 @@ class AttendanceService
                     }
                 }
 
-                $enrollment->autoCompleteIfReady();
+                $enrollment->complete();
             }
         });
     }

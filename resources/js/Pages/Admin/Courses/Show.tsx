@@ -999,10 +999,9 @@ function AttendanceSessionCard({
                         </div>
 
                         <div className="mx-6 mt-4 rounded-lg bg-info/10 px-4 py-3 text-sm text-base-content/70">
-                            Al guardar, el contenido presencial quedará
-                            completado para quienes estén presentes. Las
-                            evaluaciones y los documentos interactivos seguirán
-                            pendientes en el portal.
+                            Al guardar la asistencia, todos los módulos del curso
+                            quedarán completados para quienes estén presentes y el
+                            curso quedará al 100%.
                         </div>
 
                         <div className="max-h-[52vh] space-y-2 overflow-y-auto px-6 py-4">
