@@ -11,13 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceService
 {
-    private const PORTAL_MODULE_TYPES = [
-        'assessment',
-        'interactive_document',
-    ];
-
     /**
-     * Register attendance and complete the in-person content for attendees.
+     * Register attendance and complete the course content for attendees.
      *
      * @param  array<int>  $presentUserIds
      */
@@ -51,16 +46,8 @@ class AttendanceService
             $modules = $course->modules()
                 ->get(['id', 'course_id', 'type', 'duration_minutes', 'is_required']);
 
-            if (! $modules->contains(
-                fn ($module): bool => in_array($module->type, self::PORTAL_MODULE_TYPES, true)
-            )) {
-                return;
-            }
-
-            $inPersonModules = $modules->whereNotIn('type', self::PORTAL_MODULE_TYPES);
-
             foreach ($enrollments->whereIn('user_id', $presentUserIds) as $enrollment) {
-                foreach ($inPersonModules as $module) {
+                foreach ($modules as $module) {
                     $completion = ModuleCompletion::firstOrCreate(
                         [
                             'user_id'       => $enrollment->user_id,

@@ -79,7 +79,7 @@ class Enrollment extends Model
         $totalModules = $this->course->modules()->where('is_required', true)->count();
 
         if ($totalModules === 0) {
-            return 0;
+            return $this->isCompleted() ? 100 : 0;
         }
 
         $completedModules = $this->moduleCompletions()
@@ -96,14 +96,23 @@ class Enrollment extends Model
         }
 
         if ($this->calculateProgress() >= 100) {
-            $this->update([
-                'status'       => 'completed',
-                'completed_at' => now(),
-            ]);
-
-            // Auto-issue certificate if assessment was passed
-            $certificateService = app(\App\Modules\Certificate\Application\Services\CertificateService::class);
-            $certificateService->autoIssueOnCompletion($this);
+            $this->complete();
         }
+    }
+
+    public function complete(): void
+    {
+        if ($this->status === 'completed') {
+            return;
+        }
+
+        $this->update([
+            'status'       => 'completed',
+            'completed_at' => now(),
+        ]);
+
+        // Auto-issue certificate if assessment was passed
+        $certificateService = app(\App\Modules\Certificate\Application\Services\CertificateService::class);
+        $certificateService->autoIssueOnCompletion($this);
     }
 }
