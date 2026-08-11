@@ -75,10 +75,18 @@ interface LearnerCategory {
   total: number;
 }
 
+interface TrainingHoursByCompany {
+  id: string;
+  company: string;
+  users: number;
+  hours: number;
+}
+
 export default function Dashboard({
   stats,
   recentActivities,
   learner,
+  trainingHoursByCompany,
 }: {
   stats: Stats;
   recentActivities?: RecentActivity[];
@@ -90,6 +98,7 @@ export default function Dashboard({
     top_categories: LearnerCategory[];
     completion_rate: number;
   } | null;
+  trainingHoursByCompany?: TrainingHoursByCompany[] | null;
 }) {
   const { auth } = usePage().props as { auth: { user: User } };
   const roleName = auth.user.role?.name?.toLowerCase() || '';
@@ -536,6 +545,41 @@ export default function Dashboard({
               <div className="stat-title">Promedio por Usuario</div>
               <div className="stat-value text-warning">{stats.average_hours_per_user || 0}h</div>
               <div className="stat-desc">Usuarios con cursos finalizados: {stats.unique_users_with_completions || 0}</div>
+            </div>
+          </div>
+
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title">Horas de capacitación por empresa</h2>
+              <p className="text-sm text-base-content/60">
+                Tiempo invertido en cursos finalizados agrupado por empresa (según dominio del email).
+              </p>
+              {!trainingHoursByCompany || trainingHoursByCompany.length === 0 ? (
+                <div className="text-sm text-base-content/60 mt-2">
+                  No hay horas de capacitación registradas.
+                </div>
+              ) : (
+                <div className="overflow-x-auto mt-2">
+                  <table className="table table-zebra w-full">
+                    <thead>
+                      <tr>
+                        <th>Empresa</th>
+                        <th>Usuarios</th>
+                        <th>Horas</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {trainingHoursByCompany.map((row) => (
+                        <tr key={row.id}>
+                          <td>{row.company}</td>
+                          <td>{row.users}</td>
+                          <td>{row.hours}h</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
 

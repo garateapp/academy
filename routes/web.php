@@ -98,6 +98,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'unique_users_with_completions' => $uniqueUsersWithCompletions,
             ];
 
+            $trainingHoursByCompany = app(\App\Modules\Reporting\Application\Services\TrainingHoursService::class)
+                ->byCompany();
+
             // Recent activities from audit log
             $recentActivities = \App\Modules\Audit\Domain\AuditLog::with('actor')
                 ->latest()
@@ -263,6 +266,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'stats' => $stats,
             'recentActivities' => $recentActivities ?? null,
             'learner' => $learnerData,
+            'trainingHoursByCompany' => $trainingHoursByCompany ?? null,
         ]);
     })->name('dashboard');
 });

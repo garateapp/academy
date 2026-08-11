@@ -10,7 +10,7 @@ use App\Modules\Learning\Domain\Category;
 use App\Modules\Learning\Domain\Course;
 use App\Modules\Learning\Domain\Enrollment;
 use App\Modules\Learning\Domain\LearningPath;
-use App\Modules\Reporting\Domain\CompanyMap;
+use App\Modules\Reporting\Application\Services\TrainingHoursService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -237,30 +237,8 @@ class ReportController extends Controller
             ? round($totalTrainingHours / $uniqueUsersWithCompletions, 1)
             : 0;
 
-        $trainingByCompanyQuery = Enrollment::query()
-            ->where('enrollments.status', 'completed')
-            ->join('module_completions', 'module_completions.enrollment_id', '=', 'enrollments.id')
-            ->join('users', 'users.id', '=', 'enrollments.user_id');
-        $applyEnrollmentFilters($trainingByCompanyQuery);
-
-        $trainingHoursByCompany = $trainingByCompanyQuery
-            ->select([
-                'users.email',
-                DB::raw('sum(module_completions.time_spent_seconds) as seconds'),
-                DB::raw('count(distinct enrollments.user_id) as user_count'),
-            ])
-            ->groupBy('users.email')
-            ->get()
-            ->groupBy(fn ($row): string => CompanyMap::nameForEmail((string) $row->email))
-            ->map(fn ($rows, string $company): array => [
-                'id'      => $company,
-                'company' => $company,
-                'users'   => (int) $rows->sum('user_count'),
-                'hours'   => round((float) $rows->sum('seconds') / 3600, 1),
-            ])
-            ->sortByDesc('hours')
-            ->values()
-            ->all();
+        $trainingHoursByCompany = app(TrainingHoursService::class)
+            ->byCompany($applyEnrollmentFilters);
 
         $users = User::select('id', 'name', 'email')
             ->orderBy('name')
