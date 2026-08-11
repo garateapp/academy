@@ -43,6 +43,13 @@ interface CertificatesByMonth {
   total: number;
 }
 
+interface TrainingHoursByCompany {
+  id: string;
+  company: string;
+  users: number;
+  hours: number;
+}
+
 interface FilterOptionsUser {
   id: number;
   name: string;
@@ -71,6 +78,7 @@ export default function Index({
   totalTrainingHours,
   averageHoursPerUser,
   uniqueUsersWithCompletions,
+  trainingHoursByCompany,
   filters,
   users,
   courses,
@@ -86,6 +94,7 @@ export default function Index({
   totalTrainingHours: number;
   averageHoursPerUser: number;
   uniqueUsersWithCompletions: number;
+  trainingHoursByCompany: TrainingHoursByCompany[];
   filters: {
     user_id?: string | number | null;
     course_id?: string | number | null;
@@ -254,6 +263,24 @@ export default function Index({
             <div className="stat-title">Promedio por Usuario</div>
             <div className="stat-value text-warning">{averageHoursPerUser}h</div>
             <div className="stat-desc">Usuarios con cursos finalizados: {uniqueUsersWithCompletions}</div>
+          </div>
+        </div>
+
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Horas de capacitación por empresa</h2>
+            <p className="text-sm text-base-content/60">
+              Tiempo invertido en cursos finalizados agrupado por empresa (según dominio del email).
+            </p>
+            <DataTable
+              columns={[
+                { header: 'Empresa', accessor: (row: TrainingHoursByCompany) => row.company },
+                { header: 'Usuarios', accessor: (row: TrainingHoursByCompany) => row.users },
+                { header: 'Horas', accessor: (row: TrainingHoursByCompany) => `${row.hours}h` },
+              ]}
+              data={trainingHoursByCompany}
+              emptyMessage="No hay horas de capacitación registradas."
+            />
           </div>
         </div>
 

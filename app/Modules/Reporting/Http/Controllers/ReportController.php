@@ -10,6 +10,7 @@ use App\Modules\Learning\Domain\Category;
 use App\Modules\Learning\Domain\Course;
 use App\Modules\Learning\Domain\Enrollment;
 use App\Modules\Learning\Domain\LearningPath;
+use App\Modules\Reporting\Domain\CompanyMap;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,10 +40,10 @@ class ReportController extends Controller
 
         $applyEnrollmentFilters = function ($query) use ($filters, $dateFrom, $dateTo) {
             if ($filters['user_id']) {
-                $query->where('user_id', $filters['user_id']);
+                $query->where('enrollments.user_id', $filters['user_id']);
             }
             if ($filters['course_id']) {
-                $query->where('course_id', $filters['course_id']);
+                $query->where('enrollments.course_id', $filters['course_id']);
             }
             if ($filters['category_id']) {
                 $query->whereHas('course', function ($courseQuery) use ($filters) {
@@ -50,11 +51,11 @@ class ReportController extends Controller
                 });
             }
             if ($dateFrom && $dateTo) {
-                $query->whereBetween('created_at', [$dateFrom, $dateTo]);
+                $query->whereBetween('enrollments.created_at', [$dateFrom, $dateTo]);
             } elseif ($dateFrom) {
-                $query->where('created_at', '>=', $dateFrom);
+                $query->where('enrollments.created_at', '>=', $dateFrom);
             } elseif ($dateTo) {
-                $query->where('created_at', '<=', $dateTo);
+                $query->where('enrollments.created_at', '<=', $dateTo);
             }
         };
 
@@ -188,8 +189,11 @@ class ReportController extends Controller
             });
 
         $fromMonth = Carbon::now()->subMonths(5)->startOfMonth();
+        $monthExpression = DB::getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', issued_at) as month"
+            : "DATE_FORMAT(issued_at, '%Y-%m') as month";
         $certificatesByMonth = Certificate::tap($applyCertificateFilters)
-            ->selectRaw("DATE_FORMAT(issued_at, '%Y-%m') as month, count(*) as total")
+            ->selectRaw("$monthExpression, count(*) as total")
             ->whereNotNull('issued_at')
             ->where('issued_at', '>=', $fromMonth)
             ->groupBy('month')
@@ -233,6 +237,31 @@ class ReportController extends Controller
             ? round($totalTrainingHours / $uniqueUsersWithCompletions, 1)
             : 0;
 
+        $trainingByCompanyQuery = Enrollment::query()
+            ->where('enrollments.status', 'completed')
+            ->join('module_completions', 'module_completions.enrollment_id', '=', 'enrollments.id')
+            ->join('users', 'users.id', '=', 'enrollments.user_id');
+        $applyEnrollmentFilters($trainingByCompanyQuery);
+
+        $trainingHoursByCompany = $trainingByCompanyQuery
+            ->select([
+                'users.email',
+                DB::raw('sum(module_completions.time_spent_seconds) as seconds'),
+                DB::raw('count(distinct enrollments.user_id) as user_count'),
+            ])
+            ->groupBy('users.email')
+            ->get()
+            ->groupBy(fn ($row): string => CompanyMap::nameForEmail((string) $row->email))
+            ->map(fn ($rows, string $company): array => [
+                'id'      => $company,
+                'company' => $company,
+                'users'   => (int) $rows->sum('user_count'),
+                'hours'   => round((float) $rows->sum('seconds') / 3600, 1),
+            ])
+            ->sortByDesc('hours')
+            ->values()
+            ->all();
+
         $users = User::select('id', 'name', 'email')
             ->orderBy('name')
             ->get()
@@ -271,6 +300,7 @@ class ReportController extends Controller
             'totalTrainingHours' => $totalTrainingHours,
             'averageHoursPerUser' => $averageHoursPerUser,
             'uniqueUsersWithCompletions' => $uniqueUsersWithCompletions,
+            'trainingHoursByCompany' => $trainingHoursByCompany,
             'filters' => $filters,
             'users' => $users,
             'courses' => $courses,

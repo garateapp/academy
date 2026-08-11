@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:21
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:22
  * @route '/admin/reports'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:21
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:22
  * @route '/admin/reports'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:21
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:22
  * @route '/admin/reports'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:21
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:22
  * @route '/admin/reports'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:21
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:22
  * @route '/admin/reports'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:21
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:22
  * @route '/admin/reports'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:21
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:22
  * @route '/admin/reports'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
