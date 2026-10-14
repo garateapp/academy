@@ -27,6 +27,12 @@ interface Module {
     id: number;
     title: string;
     type?: string;
+    description?: string | null;
+    content?: string | null;
+    asset_path?: string | null;
+    asset_type?: string | null;
+    duration_minutes?: number | null;
+    is_required?: boolean;
     sort_order?: number;
     config_json?: { [key: string]: unknown } | null;
 }
@@ -644,6 +650,39 @@ export default function Show({
                             )}
                         </div>
                     </div>
+
+                    <div className="card bg-base-100 shadow-xl">
+                        <div className="card-body">
+                            <h2 className="card-title">
+                                Materiales subidos ({course.modules.length})
+                            </h2>
+                            <p className="text-sm text-base-content/60">
+                                Revisa los videos, archivos y recursos cargados
+                                en cada modulo.
+                            </p>
+
+                            {course.modules.length > 0 ? (
+                                <div className="space-y-4">
+                                    {[...course.modules]
+                                        .sort(
+                                            (a, b) =>
+                                                (a.sort_order ?? a.id) -
+                                                (b.sort_order ?? b.id),
+                                        )
+                                        .map((module) => (
+                                            <ModuleMaterial
+                                                key={module.id}
+                                                module={module}
+                                            />
+                                        ))}
+                                </div>
+                            ) : (
+                                <div className="py-8 text-center text-base-content/60">
+                                    Este curso no tiene materiales cargados aun.
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -789,6 +828,153 @@ export default function Show({
                 </div>
             )}
         </AdminLayout>
+    );
+}
+
+function buildAssetUrl(assetPath?: string | null) {
+    if (!assetPath) return null;
+    if (assetPath.startsWith('http')) return assetPath;
+    if (assetPath.startsWith('storage/')) return `/${assetPath}`;
+    return `/storage/${assetPath}`;
+}
+
+function ModuleMaterial({ module }: { module: Module }) {
+    const assetUrl = buildAssetUrl(module.asset_path);
+    const fileName = module.asset_path?.split('/').pop();
+
+    return (
+        <div className="rounded-xl border border-base-200 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    <span className="badge badge-outline badge-primary">
+                        {module.sort_order ?? module.id}
+                    </span>
+                    <span className="font-medium">{module.title}</span>
+                    <span className="badge badge-ghost badge-sm">
+                        {getModuleTypeLabel(module.type)}
+                    </span>
+                    {module.is_required && (
+                        <span className="badge badge-warning badge-sm">
+                            Obligatorio
+                        </span>
+                    )}
+                </div>
+                {module.duration_minutes && (
+                    <span className="text-xs text-base-content/60">
+                        {module.duration_minutes} min
+                    </span>
+                )}
+            </div>
+
+            {module.description && (
+                <p className="mt-2 text-sm text-base-content/70">
+                    {module.description}
+                </p>
+            )}
+
+            {module.type === 'video' && (
+                <div className="mt-3">
+                    {assetUrl ? (
+                        <>
+                            <video
+                                controls
+                                preload="metadata"
+                                className="w-full rounded-lg bg-black"
+                                src={assetUrl}
+                            >
+                                Tu navegador no soporta video HTML5.
+                            </video>
+                            <div className="mt-2 flex items-center justify-between gap-2 text-xs text-base-content/60">
+                                <span>{fileName}</span>
+                                <a
+                                    href={assetUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="link link-primary"
+                                >
+                                    Abrir en nueva pestana
+                                </a>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="rounded-lg bg-base-200 p-4 text-sm text-base-content/60">
+                            No se ha subido ningun video para este modulo.
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {module.type === 'file' && (
+                <div className="mt-3">
+                    {assetUrl ? (
+                        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-base-200 p-3">
+                            <span className="text-sm">{fileName}</span>
+                            <div className="flex gap-2">
+                                <a
+                                    href={assetUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="btn btn-sm btn-outline"
+                                >
+                                    Ver
+                                </a>
+                                <a
+                                    href={assetUrl}
+                                    download
+                                    className="btn btn-sm btn-primary"
+                                >
+                                    Descargar
+                                </a>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="rounded-lg bg-base-200 p-4 text-sm text-base-content/60">
+                            No se ha subido ningun archivo para este modulo.
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {['link', 'scorm'].includes(module.type ?? '') && (
+                <div className="mt-3">
+                    {assetUrl ? (
+                        <a
+                            href={assetUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="link link-primary break-all text-sm"
+                        >
+                            {assetUrl}
+                        </a>
+                    ) : (
+                        <div className="rounded-lg bg-base-200 p-4 text-sm text-base-content/60">
+                            No hay URL configurada.
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {module.type === 'text' && (
+                <p className="mt-3 line-clamp-3 text-sm text-base-content/70">
+                    {module.content || 'Sin contenido.'}
+                </p>
+            )}
+
+            {module.type === 'interactive_document' && (
+                <p className="mt-3 text-sm text-base-content/70">
+                    {getInteractiveDocumentFieldCount(module.config_json)}{' '}
+                    campos configurados.
+                </p>
+            )}
+
+            {module.type === 'assessment' && (
+                <p className="mt-3 text-sm text-base-content/70">
+                    {module.config_json?.assessment_id
+                        ? `Evaluacion #${module.config_json.assessment_id}`
+                        : 'Sin evaluacion asociada.'}
+                </p>
+            )}
+        </div>
     );
 }
 
