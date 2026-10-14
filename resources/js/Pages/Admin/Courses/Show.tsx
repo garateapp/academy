@@ -639,6 +639,20 @@ export default function Show({
                                                     )}
                                                 </div>
                                             </div>
+                                            {buildAssetUrl(module.asset_path) && (
+                                                <a
+                                                    href={
+                                                        buildAssetUrl(
+                                                            module.asset_path,
+                                                        ) as string
+                                                    }
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="btn btn-xs btn-outline"
+                                                >
+                                                    Ver material
+                                                </a>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -849,7 +863,18 @@ function ModuleMaterial({ module }: { module: Module }) {
                     <span className="badge badge-outline badge-primary">
                         {module.sort_order ?? module.id}
                     </span>
-                    <span className="font-medium">{module.title}</span>
+                    {assetUrl ? (
+                        <a
+                            href={assetUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="link link-primary font-medium"
+                        >
+                            {module.title}
+                        </a>
+                    ) : (
+                        <span className="font-medium">{module.title}</span>
+                    )}
                     <span className="badge badge-ghost badge-sm">
                         {getModuleTypeLabel(module.type)}
                     </span>
