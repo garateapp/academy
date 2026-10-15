@@ -56,7 +56,7 @@ interface User {
   avatar: string | null;
   last_login_at: string | null;
   created_at: string;
-  role: Role;
+  role: Role | null;
   enrollments: Enrollment[];
   enrollments_count: number;
   module_completions: ModuleCompletion[];
@@ -147,6 +147,24 @@ export default function Show({ user, availableCourses }: { user: User; available
     {
       header: 'Enviado',
       accessor: (row: InteractiveDocumentSubmission) => formatDate(row.submitted_at),
+    },
+    {
+      header: 'Acciones',
+      accessor: (row: InteractiveDocumentSubmission) => (
+        row.status === 'submitted' && row.submitted_at ? (
+          <a
+            href={`/admin/users/${user.id}/interactive-documents/${row.id}/receipt`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-xs btn-outline"
+          >
+            Descargar
+          </a>
+        ) : (
+          '-'
+        )
+      ),
+      className: 'text-center',
     },
   ];
 

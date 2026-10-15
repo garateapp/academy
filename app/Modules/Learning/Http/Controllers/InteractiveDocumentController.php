@@ -167,6 +167,28 @@ class InteractiveDocumentController extends Controller
         return $pdf->download($fileName);
     }
 
+    public function adminReceipt(InteractiveDocumentSubmission $submission): Response
+    {
+        $this->authorize('viewAny', InteractiveDocumentSubmission::class);
+
+        abort_if($submission->submitted_at === null, 404);
+
+        $submission->load(['module.course', 'user']);
+
+        $pdf = Pdf::loadView('interactive-documents.receipt', [
+            'course' => $submission->module->course,
+            'module' => $submission->module,
+            'user' => $submission->user,
+            'submission' => $submission,
+            'schema' => is_array($submission->schema_json) ? $submission->schema_json : [],
+            'responses' => is_array($submission->responses_json) ? $submission->responses_json : [],
+        ])->setPaper('letter');
+
+        $fileName = Str::slug($submission->module->title ?: 'documento') . '-intento-' . $submission->attempt_number . '-comprobante.pdf';
+
+        return $pdf->download($fileName);
+    }
+
     private function resolveEnrollment(int $userId, CourseModule $module): Enrollment
     {
         $enrollment = Enrollment::where('user_id', $userId)
