@@ -11,6 +11,8 @@ use App\Modules\Learning\Domain\ModuleCompletion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Message;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -61,6 +63,27 @@ class InteractiveDocumentController extends Controller
             responses: $payload['responses'],
             declarationAccepted: (bool) $payload['declaration_accepted'],
         );
+
+        $recipient = config('mail.to_default') ?: env('MAIL_TO_DEFAULT') ?: env('MAIL_FROM_ADDRESS');
+        if ($recipient && filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+            $module->loadMissing('course');
+
+            $subject = 'Documento interactivo enviado: ' . ($module->title ?? 'Documento');
+            $body = "Usuario: {$user->name} ({$user->email})\n" .
+                "Curso: " . ($module->course->name ?? $module->course->title ?? '') . "\n" .
+                "Módulo: " . ($module->title ?? '') . "\n" .
+                "Intento: {$submission->attempt_number}\n" .
+                "ID envío: {$submission->id}\n" .
+                "Fecha: " . ($submission->submitted_at?->toDateTimeString() ?? now()->toDateTimeString());
+
+            try {
+                Mail::raw($body, function (Message $message) use ($recipient, $subject) {
+                    $message->to($recipient)->subject($subject);
+                });
+            } catch (\Throwable $e) {
+                // Silenciar errores de envío para no romper respuesta
+            }
+        }
 
         return response()->json([
             'submitted' => true,

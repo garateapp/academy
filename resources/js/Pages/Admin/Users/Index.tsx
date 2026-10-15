@@ -16,7 +16,7 @@ interface User {
   area: string | null;
   position: string | null;
   status: string;
-  role: Role;
+  role: Role | null;
   enrollments_count: number;
 }
 
@@ -66,7 +66,7 @@ export default function Index({ users }: { users: User[] }) {
     {
       header: 'Rol',
       accessor: (row: User) => (
-        <div className="badge badge-secondary badge-outline">{row.role.name}</div>
+        <div className="badge badge-secondary badge-outline">{row.role?.name ?? 'Sin rol'}</div>
       ),
       className: 'text-center',
     },
