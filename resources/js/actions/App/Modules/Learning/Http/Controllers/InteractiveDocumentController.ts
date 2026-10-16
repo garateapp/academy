@@ -80,7 +80,7 @@ open.post = (args: { module: number | { id: number } } | [module: number | { id:
     open.form = openForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::startNewAttempt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:139
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:144
  * @route '/modules/{module}/interactive-document/new-attempt'
  */
 export const startNewAttempt = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -95,7 +95,7 @@ startNewAttempt.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::startNewAttempt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:139
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:144
  * @route '/modules/{module}/interactive-document/new-attempt'
  */
 startNewAttempt.url = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -128,7 +128,7 @@ startNewAttempt.url = (args: { module: number | { id: number } } | [module: numb
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::startNewAttempt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:139
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:144
  * @route '/modules/{module}/interactive-document/new-attempt'
  */
 startNewAttempt.post = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -138,7 +138,7 @@ startNewAttempt.post = (args: { module: number | { id: number } } | [module: num
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::startNewAttempt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:139
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:144
  * @route '/modules/{module}/interactive-document/new-attempt'
  */
     const startNewAttemptForm = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -148,7 +148,7 @@ startNewAttempt.post = (args: { module: number | { id: number } } | [module: num
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::startNewAttempt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:139
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:144
  * @route '/modules/{module}/interactive-document/new-attempt'
  */
         startNewAttemptForm.post = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -159,7 +159,7 @@ startNewAttempt.post = (args: { module: number | { id: number } } | [module: num
     startNewAttempt.form = startNewAttemptForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::saveDraft
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:103
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:108
  * @route '/modules/{module}/interactive-document/draft'
  */
 export const saveDraft = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -174,7 +174,7 @@ saveDraft.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::saveDraft
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:103
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:108
  * @route '/modules/{module}/interactive-document/draft'
  */
 saveDraft.url = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -207,7 +207,7 @@ saveDraft.url = (args: { module: number | { id: number } } | [module: number | {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::saveDraft
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:103
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:108
  * @route '/modules/{module}/interactive-document/draft'
  */
 saveDraft.post = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -217,7 +217,7 @@ saveDraft.post = (args: { module: number | { id: number } } | [module: number | 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::saveDraft
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:103
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:108
  * @route '/modules/{module}/interactive-document/draft'
  */
     const saveDraftForm = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -227,7 +227,7 @@ saveDraft.post = (args: { module: number | { id: number } } | [module: number | 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::saveDraft
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:103
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:108
  * @route '/modules/{module}/interactive-document/draft'
  */
         saveDraftForm.post = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -317,7 +317,7 @@ submit.post = (args: { module: number | { id: number } } | [module: number | { i
     submit.form = submitForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::receipt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:163
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:168
  * @route '/modules/{module}/interactive-document/receipt'
  */
 export const receipt = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -332,7 +332,7 @@ receipt.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::receipt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:163
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:168
  * @route '/modules/{module}/interactive-document/receipt'
  */
 receipt.url = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -365,7 +365,7 @@ receipt.url = (args: { module: number | { id: number } } | [module: number | { i
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::receipt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:163
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:168
  * @route '/modules/{module}/interactive-document/receipt'
  */
 receipt.get = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -374,7 +374,7 @@ receipt.get = (args: { module: number | { id: number } } | [module: number | { i
 })
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::receipt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:163
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:168
  * @route '/modules/{module}/interactive-document/receipt'
  */
 receipt.head = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -384,7 +384,7 @@ receipt.head = (args: { module: number | { id: number } } | [module: number | { 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::receipt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:163
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:168
  * @route '/modules/{module}/interactive-document/receipt'
  */
     const receiptForm = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -394,7 +394,7 @@ receipt.head = (args: { module: number | { id: number } } | [module: number | { 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::receipt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:163
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:168
  * @route '/modules/{module}/interactive-document/receipt'
  */
         receiptForm.get = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -403,7 +403,7 @@ receipt.head = (args: { module: number | { id: number } } | [module: number | { 
         })
             /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::receipt
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:163
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:168
  * @route '/modules/{module}/interactive-document/receipt'
  */
         receiptForm.head = (args: { module: number | { id: number } } | [module: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

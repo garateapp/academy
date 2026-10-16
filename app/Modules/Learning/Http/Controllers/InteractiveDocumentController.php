@@ -64,8 +64,13 @@ class InteractiveDocumentController extends Controller
             declarationAccepted: (bool) $payload['declaration_accepted'],
         );
 
-        $recipient = config('mail.to_default') ?: env('MAIL_TO_DEFAULT') ?: env('MAIL_FROM_ADDRESS');
-        if ($recipient && filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+        $recipients = collect(explode(',', (string) (config('mail.to_default') ?: env('MAIL_TO_DEFAULT') ?: env('MAIL_FROM_ADDRESS'))))
+            ->map(fn ($email) => trim($email))
+            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->unique()
+            ->values();
+
+        if ($recipients->isNotEmpty()) {
             $module->loadMissing('course');
 
             $subject = 'Documento interactivo enviado: ' . ($module->title ?? 'Documento');
@@ -77,8 +82,8 @@ class InteractiveDocumentController extends Controller
                 "Fecha: " . ($submission->submitted_at?->toDateTimeString() ?? now()->toDateTimeString());
 
             try {
-                Mail::raw($body, function (Message $message) use ($recipient, $subject) {
-                    $message->to($recipient)->subject($subject);
+                Mail::raw($body, function (Message $message) use ($recipients, $subject) {
+                    $message->to($recipients->all())->subject($subject);
                 });
             } catch (\Throwable $e) {
                 // Silenciar errores de envío para no romper respuesta
