@@ -181,15 +181,20 @@ class CourseController extends Controller
         $user = auth()->user();
         $roleName = strtolower($user->role?->name ?? '');
         $roleSlug = strtolower($user->role?->slug ?? '');
-        $isAdmin = in_array($roleName, ['superadmin', 'admin'], true)
-            || in_array($roleSlug, ['superadmin', 'super-admin', 'admin'], true);
+        $isSuperAdmin = in_array($roleName, ['superadmin'], true)
+            || in_array($roleSlug, ['superadmin', 'super-admin'], true);
+        $isAdmin = $isSuperAdmin || in_array($roleName, ['admin'], true)
+            || in_array($roleSlug, ['admin'], true);
 
-        if (!$isAdmin) {
+        $enrollment = Enrollment::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->first();
+
+        // El superadmin tambien realiza cursos: si esta matriculado, accede como learner.
+        $viewAsLearner = !$isAdmin || ($isSuperAdmin && $enrollment !== null);
+
+        if ($viewAsLearner) {
             $course->load('prerequisites');
-
-            $enrollment = Enrollment::where('user_id', $user->id)
-                ->where('course_id', $course->id)
-                ->first();
 
             if (!$enrollment) {
                 return redirect()
@@ -210,6 +215,13 @@ class CourseController extends Controller
                     return Inertia::render('errors/403', [
                         'status' => 403,
                         'message' => 'Debes completar los prerequisitos antes de ingresar a este curso.',
+                        'missingPrerequisites' => $course->prerequisites
+                            ->filter(fn (Course $prerequisite) => in_array($prerequisite->id, $missing, true))
+                            ->map(fn (Course $prerequisite) => [
+                                'id' => $prerequisite->id,
+                                'title' => $prerequisite->title,
+                            ])
+                            ->values(),
                     ]);
                 }
             }
@@ -590,6 +602,13 @@ class CourseController extends Controller
                 return Inertia::render('errors/403', [
                     'status' => 403,
                     'message' => 'Debes completar los prerequisitos antes de autoinscribirte.',
+                    'missingPrerequisites' => $course->prerequisites
+                        ->filter(fn (Course $prerequisite) => in_array($prerequisite->id, $missing, true))
+                        ->map(fn (Course $prerequisite) => [
+                            'id' => $prerequisite->id,
+                            'title' => $prerequisite->title,
+                        ])
+                        ->values(),
                 ]);
             }
         }

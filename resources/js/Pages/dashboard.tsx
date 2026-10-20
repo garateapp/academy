@@ -103,6 +103,7 @@ export default function Dashboard({
   const { auth } = usePage().props as { auth: { user: User } };
   const roleName = auth.user.role?.name?.toLowerCase() || '';
   const isAdmin = roleName === 'superadmin' || roleName === 'admin';
+  const isSuperAdmin = roleName === 'superadmin';
 
   const renderLearnerDashboard = () => {
     if (!learner) {
@@ -693,6 +694,13 @@ export default function Dashboard({
                   </table>
                 </div>
               </div>
+            </div>
+          )}
+
+          {isSuperAdmin && learner && (
+            <div className="pt-6 border-t border-base-200">
+              <h2 className="text-xl font-bold mb-4">Mis cursos asignados</h2>
+              {renderLearnerDashboard()}
             </div>
           )}
         </div>

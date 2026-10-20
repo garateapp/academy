@@ -63,8 +63,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = auth()->user();
         $roleName = strtolower($user->role?->name ?? '');
         $roleSlug = strtolower($user->role?->slug ?? '');
-        $isAdmin = in_array($roleName, ['superadmin', 'admin'], true)
-            || in_array($roleSlug, ['superadmin', 'super-admin', 'admin'], true);
+        $isSuperAdmin = in_array($roleName, ['superadmin'], true)
+            || in_array($roleSlug, ['superadmin', 'super-admin'], true);
+        $isAdmin = $isSuperAdmin || in_array($roleName, ['admin'], true)
+            || in_array($roleSlug, ['admin'], true);
 
         $stats = [];
         $learnerData = null;
@@ -111,16 +113,47 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'description' => $log->action . ' en ' . ($log->entity_type ?? 'sistema'),
                     'created_at' => $log->created_at,
                 ]);
-        } else {
+        }
+
+        if (!$isAdmin || $isSuperAdmin) {
             $activeEnrollments = \App\Modules\Learning\Domain\Enrollment::with([
                 'course.category',
                 'course.modules' => fn($query) => $query->where('is_required', true),
+                'course.prerequisites:id',
                 'moduleCompletions.module' => fn($query) => $query->where('is_required', true),
             ])
                 ->where('user_id', $user->id)
                 ->where('status', 'active')
                 ->orderByDesc('created_at')
-                ->get()
+                ->get();
+
+            // Ordenar: los cursos prerequisito van primero, luego el resto.
+            $prerequisiteMap = [];
+            foreach ($activeEnrollments as $enrollment) {
+                $prerequisiteMap[$enrollment->course_id] = $enrollment->course?->prerequisites?->pluck('id')->all() ?? [];
+            }
+            $levelCache = [];
+            $level = function ($courseId) use (&$level, &$levelCache, $prerequisiteMap) {
+                if (isset($levelCache[$courseId])) {
+                    return $levelCache[$courseId];
+                }
+                $levelCache[$courseId] = 0; // guarda contra ciclos
+                $maxParentLevel = -1;
+                foreach ($prerequisiteMap[$courseId] ?? [] as $prerequisiteId) {
+                    if (array_key_exists($prerequisiteId, $prerequisiteMap)) {
+                        $maxParentLevel = max($maxParentLevel, $level($prerequisiteId));
+                    }
+                }
+                return $levelCache[$courseId] = $maxParentLevel + 1;
+            };
+            $activeEnrollments = $activeEnrollments
+                ->sortBy(fn ($enrollment) => [
+                    $level($enrollment->course_id),
+                    -($enrollment->created_at?->getTimestamp() ?? 0),
+                ])
+                ->values();
+
+            $activeEnrollments = $activeEnrollments
                 ->map(function ($enrollment) {
                     $requiredModules = $enrollment->course?->modules ?? collect();
                     $requiredCount = $requiredModules->count();
@@ -236,15 +269,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->where('user_id', $user->id)
                 ->sum('time_spent_seconds');
 
-            $stats = [
-                'my_courses' => $user->enrollments()->where('status', 'active')->count(),
-                'my_certificates' => \App\Modules\Certificate\Domain\Certificate::where('user_id', $user->id)->count(),
-                'pending_assessments' => 0, // TODO: calcular evaluaciones pendientes
-                'active_enrollments' => $user->enrollments()->where('status', 'active')->count(),
-                'completed_courses' => $user->enrollments()->where('status', 'completed')->count(),
-                'my_training_hours' => round($myTrainingSeconds / 3600, 1),
-            ];
-            $recentActivities = null;
+            if (!$isAdmin) {
+                $stats = [
+                    'my_courses' => $user->enrollments()->where('status', 'active')->count(),
+                    'my_certificates' => \App\Modules\Certificate\Domain\Certificate::where('user_id', $user->id)->count(),
+                    'pending_assessments' => 0, // TODO: calcular evaluaciones pendientes
+                    'active_enrollments' => $user->enrollments()->where('status', 'active')->count(),
+                    'completed_courses' => $user->enrollments()->where('status', 'completed')->count(),
+                    'my_training_hours' => round($myTrainingSeconds / 3600, 1),
+                ];
+                $recentActivities = null;
+            }
 
             $totalEnrollments = (int) $user->enrollments()->count();
             $completedEnrollmentsCount = (int) $user->enrollments()->where('status', 'completed')->count();
