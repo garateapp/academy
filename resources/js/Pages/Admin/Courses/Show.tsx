@@ -48,6 +48,7 @@ interface Enrollment {
     status: string;
     progress: number;
     enrolled_at: string | null;
+    due_at?: string | null;
     completed_at?: string | null;
 }
 
@@ -214,6 +215,11 @@ export default function Show({
             header: 'Matriculado',
             accessor: (row: Enrollment) =>
                 formatDate(row.enrolled_at, { dateOnly: true }),
+        },
+        {
+            header: 'Fecha limite',
+            accessor: (row: Enrollment) =>
+                row.due_at ? formatDate(row.due_at, { dateOnly: true }) : '-',
         },
     ];
 

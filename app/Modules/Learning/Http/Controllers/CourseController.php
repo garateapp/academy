@@ -335,6 +335,7 @@ class CourseController extends Controller
                         'status' => $enrollment->status,
                         'progress' => round($enrollment->calculateProgress(), 2),
                         'enrolled_at' => $enrollment->created_at?->toIso8601String(),
+                        'due_at' => $enrollment->due_at?->toIso8601String(),
                         'completed_at' => $enrollment->completed_at?->toIso8601String(),
                     ];
                 })->values(),
