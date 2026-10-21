@@ -176,7 +176,7 @@ class CourseController extends Controller
             ->with('success', 'Curso creado exitosamente.');
     }
 
-    public function show(Course $course): Response|RedirectResponse
+    public function show(Request $request, Course $course): Response|RedirectResponse
     {
         $user = auth()->user();
         $roleName = strtolower($user->role?->name ?? '');
@@ -191,7 +191,11 @@ class CourseController extends Controller
             ->first();
 
         // El superadmin tambien realiza cursos: si esta matriculado, accede como learner.
-        $viewAsLearner = !$isAdmin || ($isSuperAdmin && $enrollment !== null);
+        // Excepcion: al llegar con attendance_session debe ver la ficha admin (tomar asistencia).
+        $viewAsLearner = !$isAdmin
+            || ($isSuperAdmin
+                && $enrollment !== null
+                && !$request->filled('attendance_session'));
 
         if ($viewAsLearner) {
             $course->load('prerequisites');
