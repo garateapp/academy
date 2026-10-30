@@ -14,7 +14,9 @@ use Illuminate\Http\Request;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\Response;
+use Inertia\Inertia;
+use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class InteractiveDocumentController extends Controller
 {
@@ -165,7 +167,7 @@ class InteractiveDocumentController extends Controller
         ]);
     }
 
-    public function receipt(Request $request, CourseModule $module): Response
+    public function receipt(Request $request, CourseModule $module): SymfonyResponse
     {
         $user = $request->user();
         $enrollment = $this->resolveEnrollment($user->id, $module);
@@ -195,9 +197,55 @@ class InteractiveDocumentController extends Controller
         return $pdf->download($fileName);
     }
 
-    public function adminReceipt(InteractiveDocumentSubmission $submission): Response
+    public function adminIndex(Request $request): Response
     {
         $this->authorize('viewAny', InteractiveDocumentSubmission::class);
+
+        $search = trim((string) $request->query('search', ''));
+
+        $submissions = InteractiveDocumentSubmission::query()
+            ->whereNotNull('submitted_at')
+            ->with(['user:id,name,email', 'module:id,title,course_id', 'module.course:id,title'])
+            ->when($search !== '', function ($query) use ($search) {
+                $like = '%' . addcslashes($search, '_%') . '%';
+
+                $query->where(function ($q) use ($like) {
+                    $q->whereHas('user', fn ($qq) => $qq->where('name', 'like', $like)
+                        ->orWhere('email', 'like', $like))
+                        ->orWhereHas('module', fn ($qq) => $qq->where('title', 'like', $like))
+                        ->orWhereHas('module.course', fn ($qq) => $qq->where('title', 'like', $like));
+                });
+            })
+            ->orderByDesc('submitted_at')
+            ->paginate(15)
+            ->withQueryString();
+
+        return Inertia::render('Admin/InteractiveDocuments/Index', [
+            'submissions' => $submissions->through(fn (InteractiveDocumentSubmission $submission) => [
+                'id' => $submission->id,
+                'attempt_number' => $submission->attempt_number,
+                'status' => $submission->status,
+                'title' => $submission->schema_json['title'] ?? $submission->module?->title ?? 'Documento interactivo',
+                'document_code' => $submission->schema_json['document_code'] ?? null,
+                'course_title' => $submission->module?->course?->title,
+                'module_title' => $submission->module?->title,
+                'user' => [
+                    'id' => $submission->user?->id,
+                    'name' => $submission->user?->name,
+                    'email' => $submission->user?->email,
+                ],
+                'submitted_at' => $submission->submitted_at?->toIso8601String(),
+                'download_url' => route('admin.interactive-documents.download', $submission->id),
+            ]),
+            'filters' => [
+                'search' => $search,
+            ],
+        ]);
+    }
+
+    public function adminReceipt(InteractiveDocumentSubmission $submission): SymfonyResponse
+    {
+        $this->authorize('view', $submission);
 
         abort_if($submission->submitted_at === null, 404);
 

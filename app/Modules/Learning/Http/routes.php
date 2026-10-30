@@ -67,6 +67,12 @@ Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(funct
     Route::get('attendance-sessions', [AttendanceSessionController::class, 'index'])
         ->name('attendance-sessions.index');
 
+    // Interactive documents (submitted forms) management
+    Route::get('interactive-documents', [InteractiveDocumentController::class, 'adminIndex'])
+        ->name('interactive-documents.index');
+    Route::get('interactive-documents/{submission}/download', [InteractiveDocumentController::class, 'adminReceipt'])
+        ->name('interactive-documents.download');
+
     // Categories Management
     Route::resource('categories', CategoryController::class);
     Route::post('categories/reorder', [CategoryController::class, 'reorder'])

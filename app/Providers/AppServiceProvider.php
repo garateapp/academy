@@ -8,8 +8,10 @@ use App\Modules\Identity\Application\Policies\UserPolicy;
 use App\Modules\Identity\Http\Policies\RolePolicy;
 use App\Modules\Learning\Domain\Category;
 use App\Modules\Learning\Domain\Course;
+use App\Modules\Learning\Domain\InteractiveDocumentSubmission;
 use App\Modules\Learning\Domain\LearningPath;
 use App\Modules\Learning\Http\Policies\CategoryPolicy;
+use App\Modules\Learning\Http\Policies\InteractiveDocumentSubmissionPolicy;
 use App\Modules\Learning\Http\Policies\CoursePolicy;
 use App\Modules\Learning\Http\Policies\LearningPathPolicy;
 use App\Modules\Assessment\Domain\Assessment;
@@ -65,6 +67,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Certificate::class, CertificatePolicy::class);
         Gate::policy(CertificateTemplate::class, CertificateTemplatePolicy::class);
         Gate::policy(Survey::class, SurveyPolicy::class);
+        Gate::policy(InteractiveDocumentSubmission::class, InteractiveDocumentSubmissionPolicy::class);
 
         // Dynamically register permissions as Gates
         try {
