@@ -4,6 +4,7 @@ namespace App\Modules\Reporting\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Assessment\Domain\Assessment;
+use App\Modules\Assessment\Domain\AssessmentAttempt;
 use App\Modules\Certificate\Domain\Certificate;
 use App\Modules\Identity\Domain\User;
 use App\Modules\Learning\Domain\Category;
@@ -19,16 +20,132 @@ use Inertia\Response;
 
 class ReportController extends Controller
 {
+    /**
+     * Reporte por curso: lista todos los participantes del curso, quienes lo
+     * finalizaron y quienes no, junto con el porcentaje obtenido en la evaluacion.
+     * Restringido a administradores y superadministradores.
+     */
+    public function byCourse(Request $request, ?Course $course = null): Response
+    {
+        $user     = $request->user();
+        $roleName = strtolower($user?->role?->name ?? '');
+        $roleSlug = strtolower($user?->role?->slug ?? '');
+        $isAdmin  = in_array($roleName, ['superadmin', 'admin'], true)
+            || in_array($roleSlug, ['superadmin', 'super-admin', 'admin'], true);
+
+        abort_unless($isAdmin, 403);
+
+        $courses = Course::query()
+            ->select('id', 'title', 'status', 'category_id')
+            ->with('category:id,name')
+            ->orderBy('title')
+            ->get()
+            ->map(fn ($item) => [
+                'id'       => $item->id,
+                'title'    => $item->title,
+                'category' => $item->category?->name,
+                'status'   => $item->status,
+            ]);
+
+        $course ??= Course::query()->orderBy('title')->first();
+
+        $emptySummary = [
+            'participants'    => 0,
+            'completed'       => 0,
+            'pending'         => 0,
+            'completion_rate' => 0,
+            'evaluated'       => 0,
+            'passed'          => 0,
+            'average_score'   => null,
+        ];
+
+        if (! $course) {
+            return Inertia::render('Admin/Reports/CourseReport', [
+                'course'       => null,
+                'courses'      => $courses,
+                'summary'      => $emptySummary,
+                'participants' => [],
+            ]);
+        }
+
+        $evaluations = AssessmentAttempt::query()
+            ->join('assessments', 'assessments.id', '=', 'assessment_attempts.assessment_id')
+            ->join('course_modules', 'course_modules.id', '=', 'assessments.module_id')
+            ->where('course_modules.course_id', $course->id)
+            ->whereNull('assessments.deleted_at')
+            ->whereIn('assessment_attempts.status', ['submitted', 'graded'])
+            ->groupBy('assessment_attempts.user_id')
+            ->select('assessment_attempts.user_id')
+            ->selectRaw('max(assessment_attempts.score) as best_score')
+            ->selectRaw('count(*) as attempts')
+            ->selectRaw('max(case when assessment_attempts.passed then 1 else 0 end) as passed')
+            ->get()
+            ->keyBy('user_id');
+
+        $participants = Enrollment::query()
+            ->where('course_id', $course->id)
+            ->with('user:id,name,email')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function (Enrollment $enrollment) use ($evaluations) {
+                $evaluation = $evaluations->get($enrollment->user_id);
+                $completed  = $enrollment->status === 'completed';
+
+                return [
+                    'id'               => $enrollment->id,
+                    'user_id'          => $enrollment->user_id,
+                    'name'             => $enrollment->user?->name ?? 'Usuario no disponible',
+                    'email'            => $enrollment->user?->email,
+                    'status'           => $enrollment->status ?? 'unknown',
+                    'completed'        => $completed,
+                    'started_at'       => $enrollment->started_at?->toDateString(),
+                    'completed_at'     => $enrollment->completed_at?->toDateString(),
+                    'evaluation_score' => $evaluation?->best_score !== null
+                        ? (int) $evaluation->best_score
+                        : null,
+                    'evaluation_attempts' => (int) ($evaluation?->attempts ?? 0),
+                    'evaluation_passed'   => $evaluation ? (bool) $evaluation->passed : false,
+                ];
+            })
+            ->values();
+
+        $total          = $participants->count();
+        $completedTotal = $participants->where('completed', true)->count();
+        $scores         = $participants->pluck('evaluation_score')->filter(fn ($score) => $score !== null);
+
+        $summary = [
+            'participants'    => $total,
+            'completed'       => $completedTotal,
+            'pending'         => $total - $completedTotal,
+            'completion_rate' => $total > 0 ? round(($completedTotal / $total) * 100, 1) : 0,
+            'evaluated'       => $scores->count(),
+            'passed'          => $participants->where('evaluation_passed', true)->count(),
+            'average_score'   => $scores->count() > 0 ? round($scores->avg(), 1) : null,
+        ];
+
+        return Inertia::render('Admin/Reports/CourseReport', [
+            'course' => [
+                'id'       => $course->id,
+                'title'    => $course->title,
+                'status'   => $course->status,
+                'category' => $course->category?->name,
+            ],
+            'courses'      => $courses,
+            'summary'      => $summary,
+            'participants' => $participants,
+        ]);
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('view-reports');
 
         $filters = [
-            'user_id' => $request->input('user_id'),
-            'course_id' => $request->input('course_id'),
+            'user_id'     => $request->input('user_id'),
+            'course_id'   => $request->input('course_id'),
             'category_id' => $request->input('category_id'),
-            'date_from' => $request->input('date_from'),
-            'date_to' => $request->input('date_to'),
+            'date_from'   => $request->input('date_from'),
+            'date_to'     => $request->input('date_to'),
         ];
 
         $dateFrom = $filters['date_from']
@@ -42,14 +159,17 @@ class ReportController extends Controller
             if ($filters['user_id']) {
                 $query->where('enrollments.user_id', $filters['user_id']);
             }
+
             if ($filters['course_id']) {
                 $query->where('enrollments.course_id', $filters['course_id']);
             }
+
             if ($filters['category_id']) {
                 $query->whereHas('course', function ($courseQuery) use ($filters) {
                     $courseQuery->where('category_id', $filters['category_id']);
                 });
             }
+
             if ($dateFrom && $dateTo) {
                 $query->whereBetween('enrollments.created_at', [$dateFrom, $dateTo]);
             } elseif ($dateFrom) {
@@ -63,14 +183,17 @@ class ReportController extends Controller
             if ($filters['user_id']) {
                 $query->where('user_id', $filters['user_id']);
             }
+
             if ($filters['course_id']) {
                 $query->where('course_id', $filters['course_id']);
             }
+
             if ($filters['category_id']) {
                 $query->whereHas('course', function ($courseQuery) use ($filters) {
                     $courseQuery->where('category_id', $filters['category_id']);
                 });
             }
+
             if ($dateFrom && $dateTo) {
                 $query->whereBetween('issued_at', [$dateFrom, $dateTo]);
             } elseif ($dateFrom) {
@@ -80,7 +203,7 @@ class ReportController extends Controller
             }
         };
 
-        $usersTotal = $filters['user_id'] ? 1 : User::count();
+        $usersTotal   = $filters['user_id'] ? 1 : User::count();
         $coursesTotal = $filters['course_id']
             ? 1
             : Course::when($filters['category_id'], function ($query) use ($filters) {
@@ -88,13 +211,13 @@ class ReportController extends Controller
             })->count();
 
         $totals = [
-            'users' => $usersTotal,
-            'courses' => $coursesTotal,
-            'categories' => Category::count(),
+            'users'          => $usersTotal,
+            'courses'        => $coursesTotal,
+            'categories'     => Category::count(),
             'learning_paths' => LearningPath::count(),
-            'assessments' => Assessment::count(),
-            'enrollments' => Enrollment::tap($applyEnrollmentFilters)->count(),
-            'certificates' => Certificate::tap($applyCertificateFilters)->count(),
+            'assessments'    => Assessment::count(),
+            'enrollments'    => Enrollment::tap($applyEnrollmentFilters)->count(),
+            'certificates'   => Certificate::tap($applyCertificateFilters)->count(),
         ];
 
         $enrollmentStatus = Enrollment::tap($applyEnrollmentFilters)
@@ -104,7 +227,7 @@ class ReportController extends Controller
             ->get()
             ->map(fn ($row) => [
                 'status' => $row->status ?? 'unknown',
-                'total' => (int) $row->total,
+                'total'  => (int) $row->total,
             ])
             ->toArray();
 
@@ -114,14 +237,17 @@ class ReportController extends Controller
         if ($filters['course_id']) {
             $coursesByUserQuery->where('enrollments.course_id', $filters['course_id']);
         }
+
         if ($filters['user_id']) {
             $coursesByUserQuery->where('enrollments.user_id', $filters['user_id']);
         }
+
         if ($filters['category_id']) {
             $coursesByUserQuery
                 ->join('courses', 'courses.id', '=', 'enrollments.course_id')
                 ->where('courses.category_id', $filters['category_id']);
         }
+
         if ($dateFrom && $dateTo) {
             $coursesByUserQuery->whereBetween('enrollments.created_at', [$dateFrom, $dateTo]);
         } elseif ($dateFrom) {
@@ -144,11 +270,11 @@ class ReportController extends Controller
             ->limit(12)
             ->get()
             ->map(fn ($user) => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'total' => (int) $user->total,
-                'active' => (int) $user->active,
+                'id'        => $user->id,
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'total'     => (int) $user->total,
+                'active'    => (int) $user->active,
                 'completed' => (int) $user->completed,
             ]);
 
@@ -173,22 +299,22 @@ class ReportController extends Controller
             ->limit(12)
             ->get()
             ->map(function ($course) {
-                $total = (int) $course->enrollments_count;
+                $total     = (int) $course->enrollments_count;
                 $completed = (int) $course->completed_enrollments_count;
-                $rate = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
+                $rate      = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
 
                 return [
-                    'id' => $course->id,
-                    'title' => $course->title,
-                    'category' => $course->category?->name,
-                    'status' => $course->status,
-                    'total' => $total,
-                    'completed' => $completed,
+                    'id'              => $course->id,
+                    'title'           => $course->title,
+                    'category'        => $course->category?->name,
+                    'status'          => $course->status,
+                    'total'           => $total,
+                    'completed'       => $completed,
                     'completion_rate' => $rate,
                 ];
             });
 
-        $fromMonth = Carbon::now()->subMonths(5)->startOfMonth();
+        $fromMonth       = Carbon::now()->subMonths(5)->startOfMonth();
         $monthExpression = DB::getDriverName() === 'sqlite'
             ? "strftime('%Y-%m', issued_at) as month"
             : "DATE_FORMAT(issued_at, '%Y-%m') as month";
@@ -232,7 +358,7 @@ class ReportController extends Controller
             ->distinct('enrollments.user_id')
             ->count('enrollments.user_id');
 
-        $totalTrainingHours = round($totalTrainingSeconds / 3600, 1);
+        $totalTrainingHours  = round($totalTrainingSeconds / 3600, 1);
         $averageHoursPerUser = $uniqueUsersWithCompletions > 0
             ? round($totalTrainingHours / $uniqueUsersWithCompletions, 1)
             : 0;
@@ -244,8 +370,8 @@ class ReportController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn ($user) => [
-                'id' => $user->id,
-                'name' => $user->name,
+                'id'    => $user->id,
+                'name'  => $user->name,
                 'email' => $user->email,
             ]);
 
@@ -254,8 +380,8 @@ class ReportController extends Controller
             ->orderBy('title')
             ->get()
             ->map(fn ($course) => [
-                'id' => $course->id,
-                'title' => $course->title,
+                'id'       => $course->id,
+                'title'    => $course->title,
                 'category' => $course->category?->name,
             ]);
 
@@ -263,26 +389,26 @@ class ReportController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn ($category) => [
-                'id' => $category->id,
+                'id'   => $category->id,
                 'name' => $category->name,
             ]);
 
         return Inertia::render('Admin/Reports/Index', [
-            'totals' => $totals,
-            'enrollmentStatus' => $enrollmentStatus,
-            'coursesByUser' => $coursesByUser,
-            'mostEnrolledCourses' => $mostEnrolledCourses,
-            'certificatesByMonth' => $certificatesByMonth,
-            'activeUsersLast30' => $activeUsersLast30,
-            'completionRate' => $completionRate,
-            'totalTrainingHours' => $totalTrainingHours,
-            'averageHoursPerUser' => $averageHoursPerUser,
+            'totals'                     => $totals,
+            'enrollmentStatus'           => $enrollmentStatus,
+            'coursesByUser'              => $coursesByUser,
+            'mostEnrolledCourses'        => $mostEnrolledCourses,
+            'certificatesByMonth'        => $certificatesByMonth,
+            'activeUsersLast30'          => $activeUsersLast30,
+            'completionRate'             => $completionRate,
+            'totalTrainingHours'         => $totalTrainingHours,
+            'averageHoursPerUser'        => $averageHoursPerUser,
             'uniqueUsersWithCompletions' => $uniqueUsersWithCompletions,
-            'trainingHoursByCompany' => $trainingHoursByCompany,
-            'filters' => $filters,
-            'users' => $users,
-            'courses' => $courses,
-            'categories' => $categories,
+            'trainingHoursByCompany'     => $trainingHoursByCompany,
+            'filters'                    => $filters,
+            'users'                      => $users,
+            'courses'                    => $courses,
+            'categories'                 => $categories,
         ]);
     }
 }
