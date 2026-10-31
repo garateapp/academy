@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::index
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:200
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:225
  * @route '/admin/interactive-documents'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::index
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:200
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:225
  * @route '/admin/interactive-documents'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::index
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:200
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:225
  * @route '/admin/interactive-documents'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::index
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:200
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:225
  * @route '/admin/interactive-documents'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::index
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:200
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:225
  * @route '/admin/interactive-documents'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::index
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:200
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:225
  * @route '/admin/interactive-documents'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::index
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:200
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:225
  * @route '/admin/interactive-documents'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::download
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:246
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:271
  * @route '/admin/interactive-documents/{submission}/download'
  */
 export const download = (args: { submission: number | { id: number } } | [submission: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ download.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::download
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:246
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:271
  * @route '/admin/interactive-documents/{submission}/download'
  */
 download.url = (args: { submission: number | { id: number } } | [submission: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -127,7 +127,7 @@ download.url = (args: { submission: number | { id: number } } | [submission: num
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::download
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:246
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:271
  * @route '/admin/interactive-documents/{submission}/download'
  */
 download.get = (args: { submission: number | { id: number } } | [submission: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -136,7 +136,7 @@ download.get = (args: { submission: number | { id: number } } | [submission: num
 })
 /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::download
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:246
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:271
  * @route '/admin/interactive-documents/{submission}/download'
  */
 download.head = (args: { submission: number | { id: number } } | [submission: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -146,7 +146,7 @@ download.head = (args: { submission: number | { id: number } } | [submission: nu
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::download
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:246
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:271
  * @route '/admin/interactive-documents/{submission}/download'
  */
     const downloadForm = (args: { submission: number | { id: number } } | [submission: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -156,7 +156,7 @@ download.head = (args: { submission: number | { id: number } } | [submission: nu
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::download
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:246
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:271
  * @route '/admin/interactive-documents/{submission}/download'
  */
         downloadForm.get = (args: { submission: number | { id: number } } | [submission: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -165,7 +165,7 @@ download.head = (args: { submission: number | { id: number } } | [submission: nu
         })
             /**
 * @see \App\Modules\Learning\Http\Controllers\InteractiveDocumentController::download
- * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:246
+ * @see app/Modules/Learning/Http/Controllers/InteractiveDocumentController.php:271
  * @route '/admin/interactive-documents/{submission}/download'
  */
         downloadForm.head = (args: { submission: number | { id: number } } | [submission: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

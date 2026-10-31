@@ -81,11 +81,36 @@ class InteractiveDocumentController extends Controller
                 "Módulo: " . ($module->title ?? '') . "\n" .
                 "Intento: {$submission->attempt_number}\n" .
                 "ID envío: {$submission->id}\n" .
-                "Fecha: " . ($submission->submitted_at?->toDateTimeString() ?? now()->toDateTimeString());
+                "Fecha: " . ($submission->submitted_at?->toDateTimeString() ?? now()->toDateTimeString()) . "\n\n" .
+                "Adjunto: comprobante en PDF de la entrega.";
+
+            // Nombre de archivo: usuario + formulario + intento, para ordenar al guardar.
+            $fileName = Str::slug($user->name ?: 'usuario')
+                . '-' . Str::slug($module->title ?: 'documento')
+                . '-intento-' . $submission->attempt_number . '-comprobante.pdf';
+
+            // Mismo PDF que descarga el usuario desde el comprobante.
+            $pdfContent = null;
+            try {
+                $pdfContent = Pdf::loadView('interactive-documents.receipt', [
+                    'course' => $module->course,
+                    'module' => $module,
+                    'user' => $user,
+                    'submission' => $submission,
+                    'schema' => is_array($submission->schema_json) ? $submission->schema_json : [],
+                    'responses' => is_array($submission->responses_json) ? $submission->responses_json : [],
+                ])->setPaper('letter')->output();
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             try {
-                Mail::raw($body, function (Message $message) use ($recipients, $subject) {
+                Mail::raw($body, function (Message $message) use ($recipients, $subject, $pdfContent, $fileName) {
                     $message->to($recipients->all())->subject($subject);
+
+                    if ($pdfContent !== null) {
+                        $message->attachData($pdfContent, $fileName, ['mime' => 'application/pdf']);
+                    }
                 });
             } catch (\Throwable $e) {
                 // Silenciar errores de envío para no romper respuesta
