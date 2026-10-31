@@ -1,7 +1,7 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:139
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:222
  * @route '/admin/reports'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:139
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:222
  * @route '/admin/reports'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:139
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:222
  * @route '/admin/reports'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:139
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:222
  * @route '/admin/reports'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:139
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:222
  * @route '/admin/reports'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:139
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:222
  * @route '/admin/reports'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::index
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:139
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:222
  * @route '/admin/reports'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,101 +79,73 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::courses
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:28
- * @route '/admin/reports/courses/{course?}'
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:33
+ * @route '/admin/reports/courses'
  */
-export const courses = (args?: { course?: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: courses.url(args, options),
+export const courses = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: courses.url(options),
     method: 'get',
 })
 
 courses.definition = {
     methods: ["get","head"],
-    url: '/admin/reports/courses/{course?}',
+    url: '/admin/reports/courses',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::courses
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:28
- * @route '/admin/reports/courses/{course?}'
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:33
+ * @route '/admin/reports/courses'
  */
-courses.url = (args?: { course?: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { course: args }
-    }
-
-            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-            args = { course: args.id }
-        }
-    
-    if (Array.isArray(args)) {
-        args = {
-                    course: args[0],
-                }
-    }
-
-    args = applyUrlDefaults(args)
-
-    validateParameters(args, [
-            "course",
-        ])
-
-    const parsedArgs = {
-                        course: typeof args?.course === 'object'
-                ? args.course.id
-                : args?.course,
-                }
-
-    return courses.definition.url
-            .replace('{course?}', parsedArgs.course?.toString() ?? '')
-            .replace(/\/+$/, '') + queryParams(options)
+courses.url = (options?: RouteQueryOptions) => {
+    return courses.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::courses
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:28
- * @route '/admin/reports/courses/{course?}'
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:33
+ * @route '/admin/reports/courses'
  */
-courses.get = (args?: { course?: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: courses.url(args, options),
+courses.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: courses.url(options),
     method: 'get',
 })
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::courses
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:28
- * @route '/admin/reports/courses/{course?}'
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:33
+ * @route '/admin/reports/courses'
  */
-courses.head = (args?: { course?: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: courses.url(args, options),
+courses.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: courses.url(options),
     method: 'head',
 })
 
     /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::courses
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:28
- * @route '/admin/reports/courses/{course?}'
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:33
+ * @route '/admin/reports/courses'
  */
-    const coursesForm = (args?: { course?: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: courses.url(args, options),
+    const coursesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: courses.url(options),
         method: 'get',
     })
 
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::courses
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:28
- * @route '/admin/reports/courses/{course?}'
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:33
+ * @route '/admin/reports/courses'
  */
-        coursesForm.get = (args?: { course?: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: courses.url(args, options),
+        coursesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: courses.url(options),
             method: 'get',
         })
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::courses
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:28
- * @route '/admin/reports/courses/{course?}'
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:33
+ * @route '/admin/reports/courses'
  */
-        coursesForm.head = (args?: { course?: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: courses.url(args, {
+        coursesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: courses.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),

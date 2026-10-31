@@ -4,28 +4,211 @@ namespace App\Modules\Reporting\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Assessment\Domain\Assessment;
-use App\Modules\Assessment\Domain\AssessmentAttempt;
 use App\Modules\Certificate\Domain\Certificate;
 use App\Modules\Identity\Domain\User;
 use App\Modules\Learning\Domain\Category;
 use App\Modules\Learning\Domain\Course;
 use App\Modules\Learning\Domain\Enrollment;
 use App\Modules\Learning\Domain\LearningPath;
+use App\Modules\Reporting\Application\Services\CourseReportService;
 use App\Modules\Reporting\Application\Services\TrainingHoursService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Writer\XLSX\Writer;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ReportController extends Controller
 {
     /**
-     * Reporte por curso: lista todos los participantes del curso, quienes lo
-     * finalizaron y quienes no, junto con el porcentaje obtenido en la evaluacion.
-     * Restringido a administradores y superadministradores.
+     * Reporte por curso: lista los participantes de todos los cursos o de un curso
+     * especifico, quienes lo finalizaron y quienes no, junto con el porcentaje
+     * obtenido en la evaluacion. Restringido a administradores y superadministradores.
      */
-    public function byCourse(Request $request, ?Course $course = null): Response
+    public function byCourse(Request $request): Response
+    {
+        $this->authorizeCourseReport($request);
+
+        $service = app(CourseReportService::class);
+
+        $course     = $this->resolveCourse($request);
+        $completion = $this->resolveCompletion($request);
+
+        $courses      = $service->courses();
+        $participants = $service->participants($course ? [$course->id] : $courses->pluck('id')->all());
+
+        return Inertia::render('Admin/Reports/CourseReport', [
+            'course' => $course ? [
+                'id'       => $course->id,
+                'title'    => $course->title,
+                'status'   => $course->status,
+                'category' => $course->category?->name,
+            ] : null,
+            'courses'      => $courses,
+            'summary'      => $service->summary($participants),
+            'participants' => $service->filterByCompletion($participants, $completion),
+            'filters'      => [
+                'course_id'  => $course?->id,
+                'completion' => $completion,
+            ],
+        ]);
+    }
+
+    /**
+     * Exportacion a Excel del reporte por curso:
+     * hoja 1 = consolidado por curso, hoja 2 = detalle de los alumnos inscritos.
+     */
+    public function exportByCourse(Request $request): BinaryFileResponse
+    {
+        $this->authorizeCourseReport($request);
+
+        $service = app(CourseReportService::class);
+
+        $course = $this->resolveCourse($request);
+
+        $courses = $course
+            ? $service->courses()->where('id', $course->id)
+            : $service->courses();
+
+        $consolidated = $service->consolidated($courses);
+        // La hoja de detalle lista a todos los alumnos inscritos, sin filtrar por finalizacion.
+        $detail = $service->participants($courses->pluck('id')->all());
+
+        $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'reporte-por-curso-' . uniqid() . '.xlsx';
+
+        try {
+            $this->writeReportExcel($path, $consolidated, $detail);
+        } catch (\Throwable $exception) {
+            @unlink($path);
+
+            throw $exception;
+        }
+
+        return response()->download(
+            $path,
+            'reporte-por-curso-' . now()->format('Ymd-His') . '.xlsx',
+            ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        )->deleteFileAfterSend(true);
+    }
+
+    private function writeReportExcel(string $path, Collection $consolidated, Collection $detail): void
+    {
+        $headerStyle = (new Style)->setFontBold()->setBackgroundColor('#DDEBF7');
+        $totalStyle  = (new Style)->setFontBold();
+
+        $writer = new Writer;
+        $writer->openToFile($path);
+
+        // Hoja 1: consolidado por curso
+        $writer->getCurrentSheet()->setName('Consolidado');
+        $writer->addRow(Row::fromValues([
+            'Curso',
+            'Categoria',
+            'Estado',
+            'Participantes',
+            'Finalizados',
+            'No finalizados',
+            '% Finalizacion',
+            'Evaluados',
+            'Aprobados',
+            'Promedio % evaluacion',
+        ], $headerStyle));
+
+        foreach ($consolidated as $row) {
+            $writer->addRow(Row::fromValues([
+                $row['course'],
+                $row['category'],
+                $row['status'],
+                $row['participants'],
+                $row['completed'],
+                $row['pending'],
+                $row['completion_rate'],
+                $row['evaluated'],
+                $row['passed'],
+                $row['average_score'],
+            ]));
+        }
+
+        $totalParticipants = (int) $consolidated->sum('participants');
+        $totalCompleted    = (int) $consolidated->sum('completed');
+        $totalEvaluated    = (int) $consolidated->sum('evaluated');
+        $weightedScore     = (float) $consolidated->sum(
+            fn ($row) => (float) ($row['average_score'] ?? 0) * (int) $row['evaluated']
+        );
+
+        $writer->addRow(Row::fromValues([
+            'TOTAL',
+            null,
+            null,
+            $totalParticipants,
+            $totalCompleted,
+            $totalParticipants - $totalCompleted,
+            $totalParticipants > 0 ? round(($totalCompleted / $totalParticipants) * 100, 1) : 0,
+            $totalEvaluated,
+            (int) $consolidated->sum('passed'),
+            $totalEvaluated > 0 ? round($weightedScore / $totalEvaluated, 1) : null,
+        ], $totalStyle));
+
+        // Hoja 2: detalle de los alumnos inscritos
+        $writer->addNewSheetAndMakeItCurrent()->setName('Detalle');
+        $writer->addRow(Row::fromValues([
+            'Curso',
+            'Participante',
+            'Email',
+            'Estado inscripcion',
+            'Finalizo',
+            'Inicio',
+            'Fecha finalizacion',
+            '% Evaluacion',
+            'Intentos',
+            'Resultado',
+        ], $headerStyle));
+
+        foreach ($detail as $row) {
+            $writer->addRow(Row::fromValues([
+                $row['course'],
+                $row['name'],
+                $row['email'],
+                $row['status'],
+                $row['completed'] ? 'Si' : 'No',
+                $row['started_at'],
+                $row['completed_at'],
+                $row['evaluation_score'],
+                $row['evaluation_attempts'],
+                $row['evaluation_score'] === null
+                    ? null
+                    : ($row['evaluation_passed'] ? 'Aprobado' : 'Reprobado'),
+            ]));
+        }
+
+        $writer->close();
+    }
+
+    private function resolveCourse(Request $request): ?Course
+    {
+        $courseId = $request->input('course_id');
+
+        return $courseId
+            ? Course::query()->findOrFail($courseId)
+            : null;
+    }
+
+    private function resolveCompletion(Request $request): ?string
+    {
+        $completion = $request->input('completion');
+
+        return in_array($completion, ['completed', 'pending'], true) ? $completion : null;
+    }
+
+    /**
+     * Este reporte es exclusivo de administradores y superadministradores.
+     */
+    private function authorizeCourseReport(Request $request): void
     {
         $user     = $request->user();
         $roleName = strtolower($user?->role?->name ?? '');
@@ -34,106 +217,6 @@ class ReportController extends Controller
             || in_array($roleSlug, ['superadmin', 'super-admin', 'admin'], true);
 
         abort_unless($isAdmin, 403);
-
-        $courses = Course::query()
-            ->select('id', 'title', 'status', 'category_id')
-            ->with('category:id,name')
-            ->orderBy('title')
-            ->get()
-            ->map(fn ($item) => [
-                'id'       => $item->id,
-                'title'    => $item->title,
-                'category' => $item->category?->name,
-                'status'   => $item->status,
-            ]);
-
-        $course ??= Course::query()->orderBy('title')->first();
-
-        $emptySummary = [
-            'participants'    => 0,
-            'completed'       => 0,
-            'pending'         => 0,
-            'completion_rate' => 0,
-            'evaluated'       => 0,
-            'passed'          => 0,
-            'average_score'   => null,
-        ];
-
-        if (! $course) {
-            return Inertia::render('Admin/Reports/CourseReport', [
-                'course'       => null,
-                'courses'      => $courses,
-                'summary'      => $emptySummary,
-                'participants' => [],
-            ]);
-        }
-
-        $evaluations = AssessmentAttempt::query()
-            ->join('assessments', 'assessments.id', '=', 'assessment_attempts.assessment_id')
-            ->join('course_modules', 'course_modules.id', '=', 'assessments.module_id')
-            ->where('course_modules.course_id', $course->id)
-            ->whereNull('assessments.deleted_at')
-            ->whereIn('assessment_attempts.status', ['submitted', 'graded'])
-            ->groupBy('assessment_attempts.user_id')
-            ->select('assessment_attempts.user_id')
-            ->selectRaw('max(assessment_attempts.score) as best_score')
-            ->selectRaw('count(*) as attempts')
-            ->selectRaw('max(case when assessment_attempts.passed then 1 else 0 end) as passed')
-            ->get()
-            ->keyBy('user_id');
-
-        $participants = Enrollment::query()
-            ->where('course_id', $course->id)
-            ->with('user:id,name,email')
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(function (Enrollment $enrollment) use ($evaluations) {
-                $evaluation = $evaluations->get($enrollment->user_id);
-                $completed  = $enrollment->status === 'completed';
-
-                return [
-                    'id'               => $enrollment->id,
-                    'user_id'          => $enrollment->user_id,
-                    'name'             => $enrollment->user?->name ?? 'Usuario no disponible',
-                    'email'            => $enrollment->user?->email,
-                    'status'           => $enrollment->status ?? 'unknown',
-                    'completed'        => $completed,
-                    'started_at'       => $enrollment->started_at?->toDateString(),
-                    'completed_at'     => $enrollment->completed_at?->toDateString(),
-                    'evaluation_score' => $evaluation?->best_score !== null
-                        ? (int) $evaluation->best_score
-                        : null,
-                    'evaluation_attempts' => (int) ($evaluation?->attempts ?? 0),
-                    'evaluation_passed'   => $evaluation ? (bool) $evaluation->passed : false,
-                ];
-            })
-            ->values();
-
-        $total          = $participants->count();
-        $completedTotal = $participants->where('completed', true)->count();
-        $scores         = $participants->pluck('evaluation_score')->filter(fn ($score) => $score !== null);
-
-        $summary = [
-            'participants'    => $total,
-            'completed'       => $completedTotal,
-            'pending'         => $total - $completedTotal,
-            'completion_rate' => $total > 0 ? round(($completedTotal / $total) * 100, 1) : 0,
-            'evaluated'       => $scores->count(),
-            'passed'          => $participants->where('evaluation_passed', true)->count(),
-            'average_score'   => $scores->count() > 0 ? round($scores->avg(), 1) : null,
-        ];
-
-        return Inertia::render('Admin/Reports/CourseReport', [
-            'course' => [
-                'id'       => $course->id,
-                'title'    => $course->title,
-                'status'   => $course->status,
-                'category' => $course->category?->name,
-            ],
-            'courses'      => $courses,
-            'summary'      => $summary,
-            'participants' => $participants,
-        ]);
     }
 
     public function index(Request $request): Response
