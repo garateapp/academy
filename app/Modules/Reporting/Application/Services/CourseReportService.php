@@ -42,7 +42,7 @@ class CourseReportService
         if ($courseIds === []) {
             return collect();
         }        $courseTitles = Course::query()->whereIn('id', $courseIds)->pluck('title', 'id');
-        $evaluations = $this->evaluationScores($courseIds);
+        $evaluations           = $this->evaluationScores($courseIds);
 
         return Enrollment::query()
             ->whereIn('course_id', $courseIds)

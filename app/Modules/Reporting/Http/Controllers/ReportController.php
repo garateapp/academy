@@ -98,7 +98,8 @@ class ReportController extends Controller
 
     private function writeReportExcel(string $path, Collection $consolidated, Collection $detail): void
     {
-        $headerStyle = (new Style)->setFontBold()->setBackgroundColor('#DDEBF7');
+        // El color debe ir en formato aARRGGBB (sin '#'), si no el XLSX queda corrupto.
+        $headerStyle = (new Style)->setFontBold()->setBackgroundColor('FFDDEBF7');
         $totalStyle  = (new Style)->setFontBold();
 
         $writer = new Writer;
