@@ -7,6 +7,7 @@ use App\Modules\Audit\Application\AuditService;
 use App\Modules\Certificate\Application\Services\CertificateService;
 use App\Modules\Certificate\Domain\Certificate;
 use App\Modules\Certificate\Domain\CertificateTemplate;
+use App\Modules\Learning\Domain\Enrollment;
 use App\Modules\Certificate\Http\Requests\IssueCertificateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -179,9 +180,40 @@ class CertificateController extends Controller
             ])
             ->values();
 
+        $issuedCourseIds = $certificates
+            ->whereNotNull('course.id')
+            ->pluck('course.id')
+            ->all();
+
+        $issuableCourses = Enrollment::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->with('course.modules')
+            ->get()
+            ->filter(fn ($enrollment) => ! $enrollment->course->modules->contains(fn ($module) => $module->assessment_id))
+            ->filter(fn ($enrollment) => ! in_array($enrollment->course->id, $issuedCourseIds))
+            ->map(fn ($enrollment) => [
+                'id'    => $enrollment->course->id,
+                'title' => $enrollment->course->title,
+            ])
+            ->values();
+
         return Inertia::render('Learner/Certificates/MyCertificates', [
-            'certificates' => $certificates,
+            'certificates'      => $certificates,
+            'issuableCourses'   => $issuableCourses,
         ]);
+    }
+
+    public function issueParticipation(Request $request, int $course): Response
+    {
+        $userId = (int) auth()->id();
+
+        $certificate = $this->certificateService->issueParticipationCertificate($userId, $course);
+
+        if (! $certificate) {
+            return back()->with('error', 'No se pudo emitir el certificado de participación.');
+        }
+
+        return back()->with('success', 'Certificado de participación emitido exitosamente.');
     }
 
     public function verify(string $verificationCode): Response

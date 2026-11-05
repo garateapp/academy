@@ -31,6 +31,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('my-certificates', [CertificateController::class, 'myCertificates'])
         ->name('certificates.my-certificates');
 
+    Route::post('my-certificates/courses/{course}/issue', [CertificateController::class, 'issueParticipation'])
+        ->name('certificates.issue-participation');
+
     // Download own certificate
     Route::get('certificates/{certificate}/download', [CertificateController::class, 'download'])
         ->name('certificates.download');

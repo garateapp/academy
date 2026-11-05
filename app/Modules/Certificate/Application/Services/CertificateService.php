@@ -241,6 +241,62 @@ class CertificateService
             ->get();
     }
 
+    public function issueParticipationCertificate(int $userId, int $courseId): ?Certificate
+    {
+        $enrollment = Enrollment::where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->where('status', 'completed')
+            ->with('course.modules')
+            ->first();
+
+        if (! $enrollment) {
+            return null;
+        }
+
+        if ($enrollment->course->modules->contains(fn ($module) => $module->assessment_id)) {
+            return null;
+        }
+
+        $existing = Certificate::where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->whereNull('revoked_at')
+            ->first();
+
+        if ($existing) {
+            return $existing;
+        }
+
+        $template = $this->resolveActiveTemplate();
+
+        $certificate = Certificate::create([
+            'user_id'     => $userId,
+            'course_id'   => $courseId,
+            'template_id' => $template->id,
+            'title'       => "Certificado de Participación - {$enrollment->course->title}",
+            'metadata'    => [
+                'score'         => null,
+                'passing_score' => null,
+                'auto_issued'   => false,
+            ],
+        ]);
+
+        $this->generateDiplomaPdf($certificate);
+
+        $this->auditService->log(
+            'certificate.participation_issued',
+            'certificate',
+            (string) $certificate->id,
+            [
+                'certificate_id'     => $certificate->id,
+                'user_id'            => $userId,
+                'course_id'          => $courseId,
+                'certificate_number' => $certificate->certificate_number,
+            ]
+        );
+
+        return $certificate;
+    }
+
     public function getCourseCertificates(int $courseId): Collection
     {
         return Certificate::where('course_id', $courseId)

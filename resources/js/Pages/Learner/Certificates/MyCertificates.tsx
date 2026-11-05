@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { Award, CalendarDays, Download, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Head, useInertia } from '@inertiajs/react';
+import { Award, CalendarDays, Download, ExternalLink, ShieldCheck, Plus } from 'lucide-react';
 
 interface Certificate {
     id: number;
@@ -23,6 +23,10 @@ interface Certificate {
 
 interface MyCertificatesProps {
     certificates: Certificate[];
+    issuableCourses: {
+        id: number;
+        title: string;
+    }[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -30,7 +34,16 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Mis certificados', href: '/my-certificates' },
 ];
 
-export default function MyCertificates({ certificates }: MyCertificatesProps) {
+export default function MyCertificates({ certificates, issuableCourses }: MyCertificatesProps) {
+    const { post } = useInertia();
+
+    const issueParticipation = (courseId: number) => {
+        post(route('certificates.issue-participation', courseId), {
+            onSuccess: () => window.location.reload(),
+            onError: () => alert('No se pudo emitir el certificado de participación.'),
+        });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Mis certificados" />
@@ -53,6 +66,40 @@ export default function MyCertificates({ certificates }: MyCertificatesProps) {
                         </div>
                     </div>
                 </section>
+
+                {issuableCourses.length > 0 && (
+                    <section className="rounded-3xl border border-amber-200 bg-amber-50 p-6">
+                        <h2 className="mt-0 font-serif text-2xl text-stone-900">Certificados por emitir</h2>
+                        <p className="mt-2 max-w-lg text-sm text-stone-600">
+                            Los siguientes cursos no tienen evaluación. Puedes emitir tu certificado de
+                            participación directamente.
+                        </p>
+                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                            {issuableCourses.map((course) => (
+                                <div
+                                    key={course.id}
+                                    className="flex items-center justify-between rounded-xl border border-stone-200 bg-white p-4"
+                                >
+                                    <div>
+                                        <p className="text-sm font-medium text-stone-900">
+                                            {course.title}
+                                        </p>
+                                        <p className="text-xs text-stone-500">
+                                            Certificado de participación
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => issueParticipation(course.id)}
+                                        className="flex size-9 items-center justify-center rounded-lg bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-700 transition"
+                                    >
+                                        <Plus className="size-4 mr-2" aria-hidden="true" />
+                                        Emitir
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {certificates.length === 0 ? (
                     <section className="rounded-3xl border border-dashed border-stone-300 bg-white px-6 py-14 text-center">
