@@ -230,7 +230,7 @@
 
             <div class="org-name">{{ $organization }}</div>
 
-            <div class="title">Diploma de Aprobación</div>
+            <div class="title">{{ $score !== null ? 'Diploma de Aprobación' : 'Certificado de Participación' }}</div>
 
             <div class="divider"></div>
 
@@ -238,7 +238,7 @@
 
             <div class="student-name">{{ $userName }}</div>
 
-            <div class="course-label">Ha completado satisfactoriamente el curso:</div>
+            <div class="course-label">{{ $score !== null ? 'Ha completado satisfactoriamente el curso:' : 'Ha Participado en el curso' }}</div>
 
             <div class="course-title">{{ $courseTitle }}</div>
 
