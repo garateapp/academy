@@ -112,7 +112,7 @@ class CertificateService
 
     public function autoIssueOnCompletion(Enrollment $enrollment): ?Certificate
     {
-        $enrollment->load(['user', 'course']);
+        $enrollment->load(['user', 'course.modules']);
 
         if (! $enrollment->course || ! $enrollment->isCompleted()) {
             return null;
@@ -125,10 +125,6 @@ class CertificateService
             ->orderByDesc('submitted_at')
             ->first();
 
-        if (! $attempt) {
-            return null;
-        }
-
         $existing = Certificate::where('user_id', $enrollment->user_id)
             ->where('course_id', $enrollment->course_id)
             ->whereNull('revoked_at')
@@ -138,16 +134,26 @@ class CertificateService
             return $existing;
         }
 
+        if (! $attempt) {
+            $hasAssessment = $enrollment->course->modules
+                ->contains(fn ($module) => $module->assessment_id);
+            if ($hasAssessment) {
+                return null;
+            }
+        }
+
         $template = $this->resolveActiveTemplate();
 
         $certificate = Certificate::create([
             'user_id'     => $enrollment->user_id,
             'course_id'   => $enrollment->course_id,
             'template_id' => $template->id,
-            'title'       => "Diploma de Aprobación - {$enrollment->course->title}",
+            'title'       => $attempt
+                ? "Diploma de Aprobación - {$enrollment->course->title}"
+                : "Certificado de Participación - {$enrollment->course->title}",
             'metadata'    => [
-                'score'         => $attempt->score,
-                'passing_score' => $attempt->assessment->passing_score ?? null,
+                'score'         => $attempt?->score,
+                'passing_score' => $attempt?->assessment->passing_score ?? null,
                 'auto_issued'   => true,
             ],
         ]);
