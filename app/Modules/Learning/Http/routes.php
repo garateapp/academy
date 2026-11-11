@@ -3,6 +3,7 @@
 use App\Modules\Learning\Http\Controllers\AttendanceSessionController;
 use App\Modules\Learning\Http\Controllers\CategoryController;
 use App\Modules\Learning\Http\Controllers\CourseController;
+use App\Modules\Learning\Http\Controllers\CourseApprovalController;
 use App\Modules\Learning\Http\Controllers\CourseModuleController;
 use App\Modules\Learning\Http\Controllers\InteractiveDocumentController;
 use App\Modules\Learning\Http\Controllers\LearningHistoryController;
@@ -80,4 +81,10 @@ Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(funct
 
     // Learning Paths
     Route::resource('learning-paths', LearningPathController::class);
+
+    // Course approvals (carlos.alvarez@garatehermanos.cl only)
+    Route::get('course-approvals', [CourseApprovalController::class, 'index'])->name('course-approvals.index');
+    Route::post('course-approvals/enrollments/{enrollment}/grade', [CourseApprovalController::class, 'grade'])->name('course-approvals.grade');
+    Route::post('course-approvals/enrollments/{enrollment}/complete', [CourseApprovalController::class, 'complete'])->name('course-approvals.complete');
+    Route::post('course-approvals/enrollments/{enrollment}/rehabilitate', [CourseApprovalController::class, 'rehabilitate'])->name('course-approvals.rehabilitate');
 });
