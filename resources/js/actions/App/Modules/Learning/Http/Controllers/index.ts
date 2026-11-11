@@ -8,6 +8,7 @@ import ModuleCompletionController from './ModuleCompletionController'
 import InteractiveDocumentController from './InteractiveDocumentController'
 import CategoryController from './CategoryController'
 import LearningPathController from './LearningPathController'
+import CourseApprovalController from './CourseApprovalController'
 const Controllers = {
     CourseController: Object.assign(CourseController, CourseController),
 LearningHistoryController: Object.assign(LearningHistoryController, LearningHistoryController),
@@ -19,6 +20,7 @@ ModuleCompletionController: Object.assign(ModuleCompletionController, ModuleComp
 InteractiveDocumentController: Object.assign(InteractiveDocumentController, InteractiveDocumentController),
 CategoryController: Object.assign(CategoryController, CategoryController),
 LearningPathController: Object.assign(LearningPathController, LearningPathController),
+CourseApprovalController: Object.assign(CourseApprovalController, CourseApprovalController),
 }
 
 export default Controllers

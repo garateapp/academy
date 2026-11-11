@@ -4,6 +4,7 @@ import attendanceSessions from './attendance-sessions'
 import interactiveDocuments from './interactive-documents'
 import categories from './categories'
 import learningPaths from './learning-paths'
+import courseApprovals from './course-approvals'
 import assessments from './assessments'
 import certificates from './certificates'
 import certificateTemplates from './certificate-templates'
@@ -17,6 +18,7 @@ attendanceSessions: Object.assign(attendanceSessions, attendanceSessions),
 interactiveDocuments: Object.assign(interactiveDocuments, interactiveDocuments),
 categories: Object.assign(categories, categories),
 learningPaths: Object.assign(learningPaths, learningPaths),
+courseApprovals: Object.assign(courseApprovals, courseApprovals),
 assessments: Object.assign(assessments, assessments),
 certificates: Object.assign(certificates, certificates),
 certificateTemplates: Object.assign(certificateTemplates, certificateTemplates),

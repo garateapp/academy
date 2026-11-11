@@ -295,6 +295,27 @@ export default function AdminLayout({
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/admin/course-approvals">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12l2 2 4-4M6 2a10.001 10.001 0 00-3.162 6.194c-.457.83-.458 1.831-.001 2.66l9.195 14.323c1.531 2.383 4.486 3.526 7.152 2.731a10.001 10.001 0 003.162-6.194c.457-.83.458-1.831.001-2.66L14.456 4.98c-1.53-2.382-4.485-3.525-7.152-2.73z"
+                            />
+                          </svg>
+                          <span>Aprobaciones de Cursos</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                   </>
                 ) : (
                   <>

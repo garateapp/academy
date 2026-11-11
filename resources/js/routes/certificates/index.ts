@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::myCertificates
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:153
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:154
  * @route '/my-certificates'
  */
 export const myCertificates = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ myCertificates.definition = {
 
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::myCertificates
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:153
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:154
  * @route '/my-certificates'
  */
 myCertificates.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ myCertificates.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::myCertificates
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:153
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:154
  * @route '/my-certificates'
  */
 myCertificates.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ myCertificates.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::myCertificates
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:153
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:154
  * @route '/my-certificates'
  */
 myCertificates.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ myCertificates.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
 
     /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::myCertificates
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:153
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:154
  * @route '/my-certificates'
  */
     const myCertificatesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ myCertificates.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
 
             /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::myCertificates
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:153
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:154
  * @route '/my-certificates'
  */
         myCertificatesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ myCertificates.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
         })
             /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::myCertificates
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:153
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:154
  * @route '/my-certificates'
  */
         myCertificatesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -78,8 +78,82 @@ myCertificates.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
     
     myCertificates.form = myCertificatesForm
 /**
+* @see \App\Modules\Certificate\Http\Controllers\CertificateController::issueParticipation
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:206
+ * @route '/my-certificates/courses/{course}/issue'
+ */
+export const issueParticipation = (args: { course: string | number } | [course: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: issueParticipation.url(args, options),
+    method: 'post',
+})
+
+issueParticipation.definition = {
+    methods: ["post"],
+    url: '/my-certificates/courses/{course}/issue',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Modules\Certificate\Http\Controllers\CertificateController::issueParticipation
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:206
+ * @route '/my-certificates/courses/{course}/issue'
+ */
+issueParticipation.url = (args: { course: string | number } | [course: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { course: args }
+    }
+
+    
+    if (Array.isArray(args)) {
+        args = {
+                    course: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        course: args.course,
+                }
+
+    return issueParticipation.definition.url
+            .replace('{course}', parsedArgs.course.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Modules\Certificate\Http\Controllers\CertificateController::issueParticipation
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:206
+ * @route '/my-certificates/courses/{course}/issue'
+ */
+issueParticipation.post = (args: { course: string | number } | [course: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: issueParticipation.url(args, options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Modules\Certificate\Http\Controllers\CertificateController::issueParticipation
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:206
+ * @route '/my-certificates/courses/{course}/issue'
+ */
+    const issueParticipationForm = (args: { course: string | number } | [course: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: issueParticipation.url(args, options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Modules\Certificate\Http\Controllers\CertificateController::issueParticipation
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:206
+ * @route '/my-certificates/courses/{course}/issue'
+ */
+        issueParticipationForm.post = (args: { course: string | number } | [course: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: issueParticipation.url(args, options),
+            method: 'post',
+        })
+    
+    issueParticipation.form = issueParticipationForm
+/**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::download
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:114
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:115
  * @route '/certificates/{certificate}/download'
  */
 export const download = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +168,7 @@ download.definition = {
 
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::download
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:114
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:115
  * @route '/certificates/{certificate}/download'
  */
 download.url = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -127,7 +201,7 @@ download.url = (args: { certificate: number | { id: number } } | [certificate: n
 
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::download
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:114
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:115
  * @route '/certificates/{certificate}/download'
  */
 download.get = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -136,7 +210,7 @@ download.get = (args: { certificate: number | { id: number } } | [certificate: n
 })
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::download
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:114
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:115
  * @route '/certificates/{certificate}/download'
  */
 download.head = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -146,7 +220,7 @@ download.head = (args: { certificate: number | { id: number } } | [certificate: 
 
     /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::download
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:114
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:115
  * @route '/certificates/{certificate}/download'
  */
     const downloadForm = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -156,7 +230,7 @@ download.head = (args: { certificate: number | { id: number } } | [certificate: 
 
             /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::download
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:114
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:115
  * @route '/certificates/{certificate}/download'
  */
         downloadForm.get = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -165,7 +239,7 @@ download.head = (args: { certificate: number | { id: number } } | [certificate: 
         })
             /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::download
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:114
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:115
  * @route '/certificates/{certificate}/download'
  */
         downloadForm.head = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -181,7 +255,7 @@ download.head = (args: { certificate: number | { id: number } } | [certificate: 
     download.form = downloadForm
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::diploma
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:141
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:142
  * @route '/certificates/{certificate}/diploma'
  */
 export const diploma = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -196,7 +270,7 @@ diploma.definition = {
 
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::diploma
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:141
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:142
  * @route '/certificates/{certificate}/diploma'
  */
 diploma.url = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -229,7 +303,7 @@ diploma.url = (args: { certificate: number | { id: number } } | [certificate: nu
 
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::diploma
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:141
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:142
  * @route '/certificates/{certificate}/diploma'
  */
 diploma.get = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -238,7 +312,7 @@ diploma.get = (args: { certificate: number | { id: number } } | [certificate: nu
 })
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::diploma
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:141
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:142
  * @route '/certificates/{certificate}/diploma'
  */
 diploma.head = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -248,7 +322,7 @@ diploma.head = (args: { certificate: number | { id: number } } | [certificate: n
 
     /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::diploma
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:141
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:142
  * @route '/certificates/{certificate}/diploma'
  */
     const diplomaForm = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -258,7 +332,7 @@ diploma.head = (args: { certificate: number | { id: number } } | [certificate: n
 
             /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::diploma
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:141
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:142
  * @route '/certificates/{certificate}/diploma'
  */
         diplomaForm.get = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -267,7 +341,7 @@ diploma.head = (args: { certificate: number | { id: number } } | [certificate: n
         })
             /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::diploma
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:141
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:142
  * @route '/certificates/{certificate}/diploma'
  */
         diplomaForm.head = (args: { certificate: number | { id: number } } | [certificate: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -283,7 +357,7 @@ diploma.head = (args: { certificate: number | { id: number } } | [certificate: n
     diploma.form = diplomaForm
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::verify
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:187
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:219
  * @route '/verify-certificate/{verificationCode}'
  */
 export const verify = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -298,7 +372,7 @@ verify.definition = {
 
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::verify
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:187
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:219
  * @route '/verify-certificate/{verificationCode}'
  */
 verify.url = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -326,7 +400,7 @@ verify.url = (args: { verificationCode: string | number } | [verificationCode: s
 
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::verify
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:187
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:219
  * @route '/verify-certificate/{verificationCode}'
  */
 verify.get = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -335,7 +409,7 @@ verify.get = (args: { verificationCode: string | number } | [verificationCode: s
 })
 /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::verify
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:187
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:219
  * @route '/verify-certificate/{verificationCode}'
  */
 verify.head = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -345,7 +419,7 @@ verify.head = (args: { verificationCode: string | number } | [verificationCode: 
 
     /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::verify
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:187
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:219
  * @route '/verify-certificate/{verificationCode}'
  */
     const verifyForm = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -355,7 +429,7 @@ verify.head = (args: { verificationCode: string | number } | [verificationCode: 
 
             /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::verify
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:187
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:219
  * @route '/verify-certificate/{verificationCode}'
  */
         verifyForm.get = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -364,7 +438,7 @@ verify.head = (args: { verificationCode: string | number } | [verificationCode: 
         })
             /**
 * @see \App\Modules\Certificate\Http\Controllers\CertificateController::verify
- * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:187
+ * @see app/Modules/Certificate/Http/Controllers/CertificateController.php:219
  * @route '/verify-certificate/{verificationCode}'
  */
         verifyForm.head = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -380,6 +454,7 @@ verify.head = (args: { verificationCode: string | number } | [verificationCode: 
     verify.form = verifyForm
 const certificates = {
     myCertificates: Object.assign(myCertificates, myCertificates),
+issueParticipation: Object.assign(issueParticipation, issueParticipation),
 download: Object.assign(download, download),
 diploma: Object.assign(diploma, diploma),
 verify: Object.assign(verify, verify),
