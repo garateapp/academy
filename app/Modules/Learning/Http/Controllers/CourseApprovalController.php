@@ -23,7 +23,7 @@ class CourseApprovalController extends Controller
 
     public function index(Request $request): Response
     {
-        abort_unless(auth()->user()->email === 'admin@admin.com', 403);
+        abort_unless(auth()->user()->email === 'carlos.alvarez@garatehermanos.cl', 403);
 
         $courses = Course::with(['category', 'modules.assessment'])
             ->whereIn('status', ['active', 'published'])
@@ -86,7 +86,7 @@ class CourseApprovalController extends Controller
 
     public function grade(Request $request, Enrollment $enrollment): RedirectResponse
     {
-        abort_unless(auth()->user()->email === 'admin@admin.com', 403);
+        abort_unless(auth()->user()->email === 'carlos.alvarez@garatehermanos.cl', 403);
 
         $course = $enrollment->course;
         abort_unless($course->modules()->whereHas('assessment')->exists(), 403);
@@ -142,7 +142,7 @@ class CourseApprovalController extends Controller
 
     public function complete(Request $request, Enrollment $enrollment): RedirectResponse
     {
-        abort_unless(auth()->user()->email === 'admin@admin.com', 403);
+        abort_unless(auth()->user()->email === 'carlos.alvarez@garatehermanos.cl', 403);
 
         $course = $enrollment->course;
 
@@ -173,7 +173,7 @@ class CourseApprovalController extends Controller
 
     public function rehabilitate(Request $request, Enrollment $enrollment): RedirectResponse
     {
-        abort_unless(auth()->user()->email === 'admin@admin.com', 403);
+        abort_unless(auth()->user()->email === 'carlos.alvarez@garatehermanos.cl', 403);
 
         $enrollment->update([
             'status' => 'active',
@@ -192,6 +192,54 @@ class CourseApprovalController extends Controller
         );
 
         return back()->with('success', 'Usuario rehabilitado en el curso.');
+    }
+
+    public function completeAll(Request $request, Course $course): RedirectResponse
+    {
+        abort_unless(auth()->user()->email === 'carlos.alvarez@garatehermanos.cl', 403);
+
+        $hasAssessment = $course->modules()->whereHas('assessment')->exists();
+        $enrollments = Enrollment::where('course_id', $course->id)
+            ->where('status', 'active')
+            ->get();
+
+        $completed = 0;
+        foreach ($enrollments as $enrollment) {
+            if ($hasAssessment) {
+                $attempt = $this->latestAttempt($enrollment->user_id, $course);
+                if (! $attempt || $attempt->status !== 'graded' || $attempt->passed !== true) {
+                    continue;
+                }
+            }
+
+            $enrollment->complete();
+            $completed++;
+
+            $this->auditService->log(
+                action: 'enrollment.completed_manually',
+                entityType: 'enrollment',
+                entityId: (string) $enrollment->id,
+                payload: [
+                    'user_id' => $enrollment->user_id,
+                    'course_id' => $course->id,
+                    'completed_by' => auth()->id(),
+                    'bulk' => true,
+                ]
+            );
+        }
+
+        $this->auditService->log(
+            action: 'course.completed_all_enrollments',
+            entityType: 'course',
+            entityId: (string) $course->id,
+            payload: [
+                'course_id' => $course->id,
+                'completed_count' => $completed,
+                'completed_by' => auth()->id(),
+            ]
+        );
+
+        return back()->with('success', "Se finalizaron {$completed} usuarios del curso.");
     }
 
     private function latestAttempt(int $userId, Course $course): ?AssessmentAttempt

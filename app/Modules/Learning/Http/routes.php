@@ -87,4 +87,5 @@ Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(funct
     Route::post('course-approvals/enrollments/{enrollment}/grade', [CourseApprovalController::class, 'grade'])->name('course-approvals.grade');
     Route::post('course-approvals/enrollments/{enrollment}/complete', [CourseApprovalController::class, 'complete'])->name('course-approvals.complete');
     Route::post('course-approvals/enrollments/{enrollment}/rehabilitate', [CourseApprovalController::class, 'rehabilitate'])->name('course-approvals.rehabilitate');
+    Route::post('course-approvals/courses/{course}/complete-all', [CourseApprovalController::class, 'completeAll'])->name('course-approvals.complete-all');
 });
