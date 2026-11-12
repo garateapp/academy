@@ -12,6 +12,7 @@ use App\Modules\Learning\Domain\Enrollment;
 use App\Modules\Learning\Domain\LearningPath;
 use App\Modules\Reporting\Application\Services\CourseReportService;
 use App\Modules\Reporting\Application\Services\TrainingHoursService;
+use Barryvdh\DomPDF\Facade as Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -94,6 +95,34 @@ class ReportController extends Controller
             'reporte-por-curso-' . now()->format('Ymd-His') . '.xlsx',
             ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
         )->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Exporta un acta de participantes del curso con espacio para firma presencial.
+     */
+    public function acta(Request $request): BinaryFileResponse
+    {
+        $this->authorizeCourseReport($request);
+
+        $service = app(CourseReportService::class);
+
+        $course = $this->resolveCourse($request);
+        abort_unless($course, 400, 'Debe seleccionar un curso para generar el acta.');
+
+        $participants = $service->participants([$course->id]);
+
+        $html = view('reports.acta', [
+            'course'       => $course,
+            'participants' => $participants,
+            'organization' => config('app.name', 'Gárate Hermanos Academy'),
+            'date'         => now()->format('d/m/Y'),
+        ])->render();
+
+        $pdf = Pdf::loadHTML($html)->setPaper('A4', 'portrait');
+
+        $fileName = "acta-{$course->id}-" . now()->format('Ymd-His') . '.pdf';
+
+        return $pdf->download($fileName);
     }
 
     private function writeReportExcel(string $path, Collection $consolidated, Collection $detail): void

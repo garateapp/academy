@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:66
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
  * @route '/admin/reports/courses/export'
  */
 export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ exportMethod.definition = {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:66
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
  * @route '/admin/reports/courses/export'
  */
 exportMethod.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ exportMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:66
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
  * @route '/admin/reports/courses/export'
  */
 exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:66
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
  * @route '/admin/reports/courses/export'
  */
 exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:66
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
  * @route '/admin/reports/courses/export'
  */
     const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:66
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
  * @route '/admin/reports/courses/export'
  */
         exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:66
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
  * @route '/admin/reports/courses/export'
  */
         exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -77,3 +77,81 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     exportMethod.form = exportMethodForm
+/**
+* @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @route '/admin/reports/courses/acta'
+ */
+export const acta = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: acta.url(options),
+    method: 'get',
+})
+
+acta.definition = {
+    methods: ["get","head"],
+    url: '/admin/reports/courses/acta',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @route '/admin/reports/courses/acta'
+ */
+acta.url = (options?: RouteQueryOptions) => {
+    return acta.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @route '/admin/reports/courses/acta'
+ */
+acta.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: acta.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @route '/admin/reports/courses/acta'
+ */
+acta.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: acta.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @route '/admin/reports/courses/acta'
+ */
+    const actaForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: acta.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @route '/admin/reports/courses/acta'
+ */
+        actaForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: acta.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @route '/admin/reports/courses/acta'
+ */
+        actaForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: acta.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    acta.form = actaForm

@@ -106,6 +106,15 @@ export default function CourseReport({
         return `/admin/reports/courses/export${query ? `?${query}` : ''}`;
     })();
 
+    const actaUrl = (() => {
+        const params = new URLSearchParams();
+        if (data.course_id) params.set('course_id', data.course_id);
+
+        const query = params.toString();
+
+        return `/admin/reports/courses/acta${query ? `?${query}` : ''}`;
+    })();
+
     const courseLabel = course
         ? course.title
         : courses.length > 0
@@ -154,6 +163,15 @@ export default function CourseReport({
                             >
                                 Exportar a Excel
                             </a>
+                            {data.course_id && (
+                                <a
+                                    href={actaUrl}
+                                    className="btn btn-outline btn-sm"
+                                    title="Acta de participación con espacio para firmas presenciales"
+                                >
+                                    Exportar Acta PDF
+                                </a>
+                            )}
                         </div>
                     </div>
 
