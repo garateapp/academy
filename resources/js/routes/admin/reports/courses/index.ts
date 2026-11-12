@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:68
  * @route '/admin/reports/courses/export'
  */
 export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ exportMethod.definition = {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:68
  * @route '/admin/reports/courses/export'
  */
 exportMethod.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ exportMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:68
  * @route '/admin/reports/courses/export'
  */
 exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:68
  * @route '/admin/reports/courses/export'
  */
 exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:68
  * @route '/admin/reports/courses/export'
  */
     const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:68
  * @route '/admin/reports/courses/export'
  */
         exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::exportMethod
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:67
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:68
  * @route '/admin/reports/courses/export'
  */
         exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     exportMethod.form = exportMethodForm
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:104
  * @route '/admin/reports/courses/acta'
  */
 export const acta = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ acta.definition = {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:104
  * @route '/admin/reports/courses/acta'
  */
 acta.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ acta.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:104
  * @route '/admin/reports/courses/acta'
  */
 acta.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ acta.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:104
  * @route '/admin/reports/courses/acta'
  */
 acta.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ acta.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:104
  * @route '/admin/reports/courses/acta'
  */
     const actaForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ acta.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:104
  * @route '/admin/reports/courses/acta'
  */
         actaForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ acta.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Modules\Reporting\Http\Controllers\ReportController::acta
- * @see app/Modules/Reporting/Http/Controllers/ReportController.php:103
+ * @see app/Modules/Reporting/Http/Controllers/ReportController.php:104
  * @route '/admin/reports/courses/acta'
  */
         actaForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

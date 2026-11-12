@@ -12,7 +12,7 @@ use App\Modules\Learning\Domain\Enrollment;
 use App\Modules\Learning\Domain\LearningPath;
 use App\Modules\Reporting\Application\Services\CourseReportService;
 use App\Modules\Reporting\Application\Services\TrainingHoursService;
-use Barryvdh\DomPDF\Facade as Pdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -23,6 +23,7 @@ use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\XLSX\Writer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ReportController extends Controller
 {
@@ -100,7 +101,7 @@ class ReportController extends Controller
     /**
      * Exporta un acta de participantes del curso con espacio para firma presencial.
      */
-    public function acta(Request $request): BinaryFileResponse
+    public function acta(Request $request): SymfonyResponse
     {
         $this->authorizeCourseReport($request);
 
