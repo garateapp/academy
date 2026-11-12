@@ -153,7 +153,7 @@ class CertificateService
                 : "Certificado de Participación - {$enrollment->course->title}",
             'metadata'    => [
                 'score'         => $attempt?->score,
-                'passing_score' => $attempt?->assessment->passing_score ?? null,
+                'passing_score' => $attempt?->assessment?->passing_score ?? null,
                 'auto_issued'   => true,
             ],
         ]);
@@ -168,7 +168,7 @@ class CertificateService
                 'certificate_id'     => $certificate->id,
                 'user_id'            => $enrollment->user_id,
                 'course_id'          => $enrollment->course_id,
-                'score'              => $attempt->score,
+                'score'              => $attempt?->score,
                 'certificate_number' => $certificate->certificate_number,
             ]
         );
