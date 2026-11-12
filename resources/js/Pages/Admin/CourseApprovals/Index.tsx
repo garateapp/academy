@@ -209,9 +209,31 @@ export default function CourseApprovals({
                             </h2>
                             <div className="text-xs text-base-content/60 mb-3">
                                 {course.has_assessment
-                                    ? 'Este curso tiene evaluación. Debe calificarse antes de finalizar.'
+                                    ? 'Este curso tiene evaluación. Solo se finalizarán usuarios con evaluación aprobada.'
                                     : 'Este curso no tiene evaluación.'}
                             </div>
+                            {course && enrollments && enrollments.length > 0 && (
+                                <div className="flex gap-2 mb-3">
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() => {
+                                            if (
+                                                window.confirm(
+                                                    `¿Finalizar todos los usuarios (${enrollments.filter(e => e.status !== 'completed').length} pendientes) del curso "${course.title}"?`
+                                                )
+                                            ) {
+                                                post(`/admin/course-approvals/courses/${course.id}/complete-all`, {
+                                                    onSuccess: () => {
+                                                        setData('course_id', data.course_id);
+                                                    },
+                                                });
+                                            }
+                                        }}
+                                    >
+                                        Finalizar todos los usuarios
+                                    </Button>
+                                </div>
+                            )}
                             {(enrollments ?? []).length === 0 ? (
                                 <div className="text-sm text-base-content/60 text-center py-8">
                                     No hay usuarios asignados a este curso.

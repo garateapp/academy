@@ -314,6 +314,85 @@ rehabilitate.post = (args: { enrollment: number | { id: number } } | [enrollment
         })
     
     rehabilitate.form = rehabilitateForm
-const CourseApprovalController = { index, grade, complete, rehabilitate }
+/**
+* @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @route '/admin/course-approvals/courses/{course}/complete-all'
+ */
+export const completeAll = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: completeAll.url(args, options),
+    method: 'post',
+})
+
+completeAll.definition = {
+    methods: ["post"],
+    url: '/admin/course-approvals/courses/{course}/complete-all',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @route '/admin/course-approvals/courses/{course}/complete-all'
+ */
+completeAll.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { course: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+            args = { course: args.id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    course: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        course: typeof args.course === 'object'
+                ? args.course.id
+                : args.course,
+                }
+
+    return completeAll.definition.url
+            .replace('{course}', parsedArgs.course.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @route '/admin/course-approvals/courses/{course}/complete-all'
+ */
+completeAll.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: completeAll.url(args, options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @route '/admin/course-approvals/courses/{course}/complete-all'
+ */
+    const completeAllForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: completeAll.url(args, options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @route '/admin/course-approvals/courses/{course}/complete-all'
+ */
+        completeAllForm.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: completeAll.url(args, options),
+            method: 'post',
+        })
+    
+    completeAll.form = completeAllForm
+const CourseApprovalController = { index, grade, complete, rehabilitate, completeAll }
 
 export default CourseApprovalController
