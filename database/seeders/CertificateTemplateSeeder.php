@@ -10,7 +10,7 @@ class CertificateTemplateSeeder extends Seeder
     public function run(): void
     {
         CertificateTemplate::updateOrCreate(
-            ['name' => 'Diploma de Aprobación - Greenex Academy'],
+            ['name' => 'Diploma de Aprobación - Gárate Hermanos Academy'],
             [
                 'description'  => 'Plantilla por defecto para diplomas de aprobación de cursos.',
                 'content'      => $this->getDiplomaHtml(),
@@ -91,7 +91,7 @@ class CertificateTemplateSeeder extends Seeder
                 <div class="footer-value">{{completion_date}}</div>
             </div>
             <div class="footer-col">
-                <div class="seal"><div class="seal-inner"><div class="seal-text">Greenex<br>Academy</div></div></div>
+                <div class="seal"><div class="seal-inner"><div class="seal-text">Gárate Hermanos<br>Academy</div></div></div>
             </div>
             <div class="footer-col">
                 <div class="footer-line"></div>

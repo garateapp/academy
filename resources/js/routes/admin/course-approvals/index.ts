@@ -237,7 +237,7 @@ complete.post = (args: { enrollment: number | { id: number } } | [enrollment: nu
     complete.form = completeForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::rehabilitate
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:174
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:176
  * @route '/admin/course-approvals/enrollments/{enrollment}/rehabilitate'
  */
 export const rehabilitate = (args: { enrollment: number | { id: number } } | [enrollment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -252,7 +252,7 @@ rehabilitate.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::rehabilitate
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:174
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:176
  * @route '/admin/course-approvals/enrollments/{enrollment}/rehabilitate'
  */
 rehabilitate.url = (args: { enrollment: number | { id: number } } | [enrollment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -285,7 +285,7 @@ rehabilitate.url = (args: { enrollment: number | { id: number } } | [enrollment:
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::rehabilitate
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:174
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:176
  * @route '/admin/course-approvals/enrollments/{enrollment}/rehabilitate'
  */
 rehabilitate.post = (args: { enrollment: number | { id: number } } | [enrollment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -295,7 +295,7 @@ rehabilitate.post = (args: { enrollment: number | { id: number } } | [enrollment
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::rehabilitate
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:174
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:176
  * @route '/admin/course-approvals/enrollments/{enrollment}/rehabilitate'
  */
     const rehabilitateForm = (args: { enrollment: number | { id: number } } | [enrollment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -305,7 +305,7 @@ rehabilitate.post = (args: { enrollment: number | { id: number } } | [enrollment
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::rehabilitate
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:174
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:176
  * @route '/admin/course-approvals/enrollments/{enrollment}/rehabilitate'
  */
         rehabilitateForm.post = (args: { enrollment: number | { id: number } } | [enrollment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -316,7 +316,7 @@ rehabilitate.post = (args: { enrollment: number | { id: number } } | [enrollment
     rehabilitate.form = rehabilitateForm
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:199
  * @route '/admin/course-approvals/courses/{course}/complete-all'
  */
 export const completeAll = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -331,7 +331,7 @@ completeAll.definition = {
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:199
  * @route '/admin/course-approvals/courses/{course}/complete-all'
  */
 completeAll.url = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -364,7 +364,7 @@ completeAll.url = (args: { course: number | { id: number } } | [course: number |
 
 /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:199
  * @route '/admin/course-approvals/courses/{course}/complete-all'
  */
 completeAll.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -374,7 +374,7 @@ completeAll.post = (args: { course: number | { id: number } } | [course: number 
 
     /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:199
  * @route '/admin/course-approvals/courses/{course}/complete-all'
  */
     const completeAllForm = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -384,7 +384,7 @@ completeAll.post = (args: { course: number | { id: number } } | [course: number 
 
             /**
 * @see \App\Modules\Learning\Http\Controllers\CourseApprovalController::completeAll
- * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:197
+ * @see app/Modules/Learning/Http/Controllers/CourseApprovalController.php:199
  * @route '/admin/course-approvals/courses/{course}/complete-all'
  */
         completeAllForm.post = (args: { course: number | { id: number } } | [course: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

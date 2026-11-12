@@ -262,10 +262,12 @@ export default function CourseApprovals({
                                                 <td>
                                                     <progress
                                                         className="progress w-24"
-                                                        value={e.progress}
+                                                        value={e.status === 'completed' ? 100 : e.progress}
                                                         max="100"
                                                     ></progress>
-                                                    <span className="text-xs ml-2">{e.progress.toFixed(0)}%</span>
+                                                    <span className="text-xs ml-2">
+                                                        {e.status === 'completed' ? 100 : e.progress.toFixed(0)}%
+                                                    </span>
                                                 </td>
                                                 <td>{formatDate(e.enrolled_at, { dateOnly: true })}</td>
                                                 <td>{formatDate(e.completed_at, { dateOnly: true })}</td>

@@ -57,7 +57,7 @@ class CourseApprovalController extends Controller
                             'email' => $enrollment->user?->email,
                         ],
                         'status' => $enrollment->status,
-                        'progress' => round($enrollment->calculateProgress(), 2),
+                        'progress' => $enrollment->status === 'completed' ? 100 : round($enrollment->calculateProgress(), 2),
                         'enrolled_at' => $enrollment->created_at?->toIso8601String(),
                         'completed_at' => $enrollment->completed_at?->toIso8601String(),
                         'has_assessment' => $course->modules()->whereHas('assessment')->exists(),
@@ -157,6 +157,8 @@ class CourseApprovalController extends Controller
 
         $enrollment->complete();
 
+        $this->markModulesCompleted($enrollment);
+
         $this->auditService->log(
             action: 'enrollment.completed_manually',
             entityType: 'enrollment',
@@ -213,6 +215,8 @@ class CourseApprovalController extends Controller
             }
 
             $enrollment->complete();
+
+            $this->markModulesCompleted($enrollment);
             $completed++;
 
             $this->auditService->log(
@@ -240,6 +244,31 @@ class CourseApprovalController extends Controller
         );
 
         return back()->with('success', "Se finalizaron {$completed} usuarios del curso.");
+    }
+
+    private function markModulesCompleted(Enrollment $enrollment): void
+    {
+        $course = $enrollment->course;
+        $course->load('modules');
+
+        foreach ($course->modules as $module) {
+            if (! $module->is_required) {
+                continue;
+            }
+
+            ModuleCompletion::firstOrCreate(
+                [
+                    'user_id'       => $enrollment->user_id,
+                    'enrollment_id' => $enrollment->id,
+                    'module_id'     => $module->id,
+                ],
+                [
+                    'completed_at'       => now(),
+                    'time_spent_seconds' => ($module->duration_minutes ?? 1) * 60,
+                    'score'              => null,
+                ]
+            );
+        }
     }
 
     private function latestAttempt(int $userId, Course $course): ?AssessmentAttempt
