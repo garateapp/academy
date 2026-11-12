@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useInertia } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Award, CalendarDays, Download, ExternalLink, ShieldCheck, Plus } from 'lucide-react';
 
 interface Certificate {
@@ -35,10 +35,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function MyCertificates({ certificates, issuableCourses }: MyCertificatesProps) {
-    const { post } = useInertia();
 
     const issueParticipation = (courseId: number) => {
-        post(route('certificates.issue-participation', courseId), {
+        router.post(route('certificates.issue-participation', courseId), {
             onSuccess: () => window.location.reload(),
             onError: () => alert('No se pudo emitir el certificado de participación.'),
         });
