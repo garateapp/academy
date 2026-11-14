@@ -82,7 +82,7 @@ Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(funct
     // Learning Paths
     Route::resource('learning-paths', LearningPathController::class);
 
-    // Course approvals (carlos.alvarez@garatehermanos.cl only)
+    // Course approvals (admin@admin.com only)
     Route::get('course-approvals', [CourseApprovalController::class, 'index'])->name('course-approvals.index');
     Route::post('course-approvals/enrollments/{enrollment}/grade', [CourseApprovalController::class, 'grade'])->name('course-approvals.grade');
     Route::post('course-approvals/enrollments/{enrollment}/complete', [CourseApprovalController::class, 'complete'])->name('course-approvals.complete');

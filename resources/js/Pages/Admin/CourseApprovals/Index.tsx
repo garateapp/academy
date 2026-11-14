@@ -179,7 +179,7 @@ export default function CourseApprovals({
                     <div>
                         <h2 className="text-2xl font-bold">Aprobaciones de Cursos</h2>
                         <p className="text-sm text-base-content/60">
-                            Acceso restringido a carlos.alvarez@garatehermanos.cl. Selecciona un curso
+                            Acceso restringido a admin@admin.com. Selecciona un curso
                             para aprobar o rehabilitar a sus usuarios asignados.
                         </p>
                     </div>
