@@ -96,8 +96,19 @@ class CourseApprovalController extends Controller
             'passed' => ['required', 'boolean'],
         ]);
 
+        $assessment = $course->modules()->whereHas('assessment')->first()->assessment;
+
         $attempt = $this->latestAttempt($enrollment->user_id, $course);
-        abort_unless($attempt, 404, 'No hay intento de evaluación para calificar.');
+
+        if (! $attempt) {
+            $attempt = AssessmentAttempt::create([
+                'assessment_id' => $assessment->id,
+                'user_id' => $enrollment->user_id,
+                'enrollment_id' => $enrollment->id,
+                'status' => 'submitted',
+                'submitted_at' => now(),
+            ]);
+        }
 
         $attempt->update([
             'score' => (float) $validated['score'],
@@ -145,15 +156,6 @@ class CourseApprovalController extends Controller
         abort_unless(auth()->user()->email === 'admin@admin.com', 403);
 
         $course = $enrollment->course;
-
-        if ($course->modules()->whereHas('assessment')->exists()) {
-            $attempt = $this->latestAttempt($enrollment->user_id, $course);
-            abort_unless(
-                $attempt && $attempt->status === 'graded' && $attempt->passed === true,
-                403,
-                'El usuario debe tener la evaluación aprobada para finalizar el curso.'
-            );
-        }
 
         $enrollment->complete();
 
@@ -207,13 +209,6 @@ class CourseApprovalController extends Controller
 
         $completed = 0;
         foreach ($enrollments as $enrollment) {
-            if ($hasAssessment) {
-                $attempt = $this->latestAttempt($enrollment->user_id, $course);
-                if (! $attempt || $attempt->status !== 'graded' || $attempt->passed !== true) {
-                    continue;
-                }
-            }
-
             $enrollment->complete();
 
             $this->markModulesCompleted($enrollment);
