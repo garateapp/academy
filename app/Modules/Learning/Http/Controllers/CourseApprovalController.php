@@ -89,14 +89,17 @@ class CourseApprovalController extends Controller
         abort_unless(auth()->user()->email === 'admin@admin.com', 403);
 
         $course = $enrollment->course;
-        abort_unless($course->modules()->whereHas('assessment')->exists(), 403);
+
+        $module = $course->modules()->whereHas('assessment')->first();
+        abort_unless($module, 403, 'El curso no tiene evaluación configurada.');
+
+        $assessment = $module->assessment;
+        abort_unless($assessment, 403, 'No se encontró la evaluación.');
 
         $validated = $request->validate([
             'score' => ['required', 'numeric', 'between:0,100'],
             'passed' => ['required', 'boolean'],
         ]);
-
-        $assessment = $course->modules()->whereHas('assessment')->first()->assessment;
 
         $attempt = $this->latestAttempt($enrollment->user_id, $course);
 
@@ -119,7 +122,6 @@ class CourseApprovalController extends Controller
         ]);
 
         if ((bool) $validated['passed']) {
-            $assessment = $course->modules()->whereHas('assessment')->first()->assessment;
             ModuleCompletion::firstOrCreate(
                 [
                     'user_id' => $enrollment->user_id,
